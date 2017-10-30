@@ -60,13 +60,13 @@ void Scene::makeNodes()
 
     // Phong materials
     auto phong = std::make_shared<PhongMaterial>(phong_prog);
-    phongMaterials_["phong1"] = phong;
+    phongMaterials_["PhongBlue"] = phong;
     phong->phong.k_diffuse = QVector3D(0.1f,0.1f,0.7f);
     phong->phong.k_ambient = phong->phong.k_diffuse * 0.3f;
     phong->phong.shininess = 80;
 
     auto phong2 = std::make_shared<PhongMaterial>(phong_prog);
-    phongMaterials_["phong2"] = phong2;
+    phongMaterials_["PhongRed"] = phong2;
     phong2->phong.k_diffuse = QVector3D(0.4f,0.1f,0.1f);
     phong2->phong.k_ambient = phong2->phong.k_diffuse * 0.3f;
     phong2->phong.shininess = 80;
@@ -233,6 +233,23 @@ void Scene::toggleAnimation(bool flag)
     }
 }
 
+void Scene::setMaterial(QString mat)
+{
+    auto n = nodes_["Scene"]->children.at(0);
+    assert(n);
+
+
+    auto phong_prog = createProgram(":/shaders/phong.vert", ":/shaders/phong.frag");
+    auto phong2 = std::make_shared<PhongMaterial>(phong_prog);
+    phong2->phong.k_diffuse = QVector3D(0.4f,0.1f,0.1f);
+    phong2->phong.k_ambient = phong2->phong.k_diffuse * 0.3f;
+    phong2->phong.shininess = 80;
+
+    n->mesh->replaceMaterial(phong2);
+
+    update();
+}
+
 void Scene::setSceneNode(QString node)
 {
     auto n = nodes_[node];
@@ -262,7 +279,11 @@ void Scene::setLightIntensity(size_t i, float v)
 // pass key/mouse events on to navigator objects
 void Scene::keyPressEvent(QKeyEvent *event) {
 
-    cameraNavigator_->keyPressEvent(event);
+    if(event->key() == Qt::Key_M){
+        this->setMaterial("s");
+    }else{
+        cameraNavigator_->keyPressEvent(event);
+    }
     update();
 
 }

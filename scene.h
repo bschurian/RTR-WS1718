@@ -47,6 +47,9 @@ public slots:
     // change the node to be rendered in the scene
     void setSceneNode(QString node);
 
+    // change the material of the node to be rendered in the scene
+    void setMaterial(QString mat);
+
     // change background color
     void setBackgroundColor(QVector3D rgb);
 
