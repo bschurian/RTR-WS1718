@@ -20,7 +20,6 @@ void CartoonMaterial::apply(unsigned int light_pass)
     // Phong
     prog_->setUniformValue("phong.k_ambient",  phong.k_ambient);
     prog_->setUniformValue("phong.k_diffuse",  phong.k_diffuse);
-    //prog_->setUniformValue("phong.k_diffuse",  QVector3D(0.20f,0.20f,0.10f));
     prog_->setUniformValue("phong.k_specular", phong.k_specular);
     prog_->setUniformValue("phong.shininess",  phong.shininess);
 

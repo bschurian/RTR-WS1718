@@ -1,15 +1,15 @@
 #pragma once
 
-#include "material/material.h"
+#include "material/animatedmaterial.h"
 
 #include <QOpenGLTexture>
 
 
-class CartoonMaterial : public Material {
+class CartoonMaterial : public AnimatedMaterial {
 public:
 
     // constructor requires existing shader program
-    CartoonMaterial(std::shared_ptr<QOpenGLShaderProgram> prog) : Material(prog)
+    CartoonMaterial(std::shared_ptr<QOpenGLShaderProgram> prog) : AnimatedMaterial(prog)
     {
         lights.push_back(PointLight()); // make sure there is at least one light
     }

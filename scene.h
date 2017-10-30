@@ -102,6 +102,7 @@ protected:
 
     // different materials to be demonstrated
     std::map<QString, std::shared_ptr<PhongMaterial>> phongMaterials_;
+    std::map<QString, std::shared_ptr<CartoonMaterial>> cartoonMaterials_;
 
     // mesh(es) to be used / shared
     std::map<QString, std::shared_ptr<Mesh>> meshes_;

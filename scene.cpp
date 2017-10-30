@@ -72,11 +72,11 @@ void Scene::makeNodes()
     phong2->phong.shininess = 80;
 
     // Phong materials
-    /*auto cartoon = std::make_shared<CartoonMaterial>(cartoon_prog);
-    phongMaterials_["cartoon"] = cartoon;
+    auto cartoon = std::make_shared<CartoonMaterial>(cartoon_prog);
+    cartoonMaterials_["cartoon"] = cartoon;
     cartoon->phong.k_diffuse = QVector3D(0.1f,0.5f,0.1f);
     cartoon->phong.k_ambient = cartoon->phong.k_diffuse * 0.3f;
-    cartoon->phong.shininess = 80;*/
+    cartoon->phong.shininess = 80;
 
     // which material to use as default for all objects?
     auto std = phong;

@@ -17,6 +17,14 @@ public:
 
     // animation time
     float time = 0.0;
+
+    struct PointLight {
+        QVector4D position_WC = QVector4D(0,1,5,1);
+        QVector3D color = QVector3D(1,1,1);
+        float intensity = 0.5;
+    };
+    std::vector<PointLight> lights;
+
 };
 
 
