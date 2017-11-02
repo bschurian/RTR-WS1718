@@ -56,47 +56,41 @@ void Scene::makeNodes()
 {
     // load shader source files and compile them into OpenGL program objects
     auto phong_prog = createProgram(":/shaders/phong.vert", ":/shaders/phong.frag");
-    auto cartoon_prog = createProgram(":/shaders/cartoon.vert", ":/shaders/cartoon.frag");
 
     // Phong materials
     auto phong = std::make_shared<PhongMaterial>(phong_prog);
-    phongMaterials_["PhongBlue"] = phong;
-    phong->phong.k_diffuse = QVector3D(0.1f,0.1f,0.7f);
+    phongMaterials_["Phong"] = phong;
+    phong->phong.k_diffuse = QVector3D(0.8f,0.1f,0.1f);
     phong->phong.k_ambient = phong->phong.k_diffuse * 0.3f;
     phong->phong.shininess = 80;
 
-    auto phong2 = std::make_shared<PhongMaterial>(phong_prog);
-    phongMaterials_["PhongRed"] = phong2;
-    phong2->phong.k_diffuse = QVector3D(0.4f,0.1f,0.1f);
-    phong2->phong.k_ambient = phong2->phong.k_diffuse * 0.3f;
-    phong2->phong.shininess = 80;
+    auto toon = std::make_shared<PhongMaterial>(phong_prog);
+    phongMaterials_["Toon"] = toon;
+    toon->phong.k_diffuse = QVector3D(0.1f,0.1f,0.8f);
+    toon->phong.k_ambient = toon->phong.k_diffuse * 0.3f;
+    toon->phong.shininess = 80;
 
-    // Phong materials
-    auto cartoon = std::make_shared<CartoonMaterial>(cartoon_prog);
-    cartoonMaterials_["cartoon"] = cartoon;
-    cartoon->phong.k_diffuse = QVector3D(0.1f,0.5f,0.1f);
-    cartoon->phong.k_ambient = cartoon->phong.k_diffuse * 0.3f;
-    cartoon->phong.shininess = 80;
+    auto dots = std::make_shared<PhongMaterial>(phong_prog);
+    phongMaterials_["Dots"] = dots;
+    dots->phong.k_diffuse = QVector3D(0.1f,0.8f,0.1f);
+    dots->phong.k_ambient = dots->phong.k_diffuse * 0.3f;
+    dots->phong.shininess = 80;
 
     // which material to use as default for all objects?
     auto std = cartoon;
 
     // load meshes from .obj files and assign shader programs to them
     meshes_["Duck"]    = std::make_shared<Mesh>(":/models/duck/duck.obj", std);
-    meshes_["Bunny"]    = std::make_shared<Mesh>(":/models/stanford_bunny/bunny.obj", std);
     meshes_["Teapot"]  = std::make_shared<Mesh>(":/models/teapot/teapot.obj", std);
-    //meshes_["Goblin"]  = std::make_shared<Mesh>(":/models/goblin.obj", std);
 
     // add meshes of some procedural geometry objects (not loaded from OBJ files)
-    meshes_["Cube"]   = std::make_shared<Mesh>(make_shared<geom::Cube>(), phong2);
+    meshes_["Cube"]   = std::make_shared<Mesh>(make_shared<geom::Cube>(), std);
 
     // pack each mesh into a scene node, along with a transform that scales
     // it to standard size [1,1,1]
     nodes_["Cube"]    = createNode(meshes_["Cube"], true);
     nodes_["Duck"]    = createNode(meshes_["Duck"], true);
-    nodes_["Bunny"]    = createNode(meshes_["Bunny"], true);
     nodes_["Teapot"]  = createNode(meshes_["Teapot"], true);
-    //nodes_["Goblin"]  = createNode(meshes_["Goblin"], true);
 
 }
 
@@ -239,23 +233,6 @@ void Scene::toggleAnimation(bool flag)
     }
 }
 
-void Scene::setMaterial(QString mat)
-{
-    auto n = nodes_["Scene"]->children.at(0);
-    assert(n);
-
-
-    auto phong_prog = createProgram(":/shaders/phong.vert", ":/shaders/phong.frag");
-    auto phong2 = std::make_shared<PhongMaterial>(phong_prog);
-    phong2->phong.k_diffuse = QVector3D(0.4f,0.1f,0.1f);
-    phong2->phong.k_ambient = phong2->phong.k_diffuse * 0.3f;
-    phong2->phong.shininess = 80;
-
-    n->mesh->replaceMaterial(phong2);
-
-    update();
-}
-
 void Scene::setSceneNode(QString node)
 {
     auto n = nodes_[node];
@@ -263,6 +240,26 @@ void Scene::setSceneNode(QString node)
 
     nodes_["Scene"]->children.clear();
     nodes_["Scene"]->children.push_back(n);
+    update();
+}
+
+void Scene::setMaterialNode(QString mat,QString node)
+{
+    auto n = nodes_[node];
+
+    // dotMaterial und toonMaterial
+    if(mat == "Dots"){
+        auto material = phongMaterials_[mat];
+        n->mesh->replaceMaterial(material);
+    }else if(mat == "Toon"){
+        auto material = phongMaterials_[mat];
+        n->mesh->replaceMaterial(material);
+    }else{
+        auto material = phongMaterials_[mat];
+        n->mesh->replaceMaterial(material);
+    }
+
+
 
     update();
 }
@@ -287,11 +284,7 @@ void Scene::setLightIntensity(size_t i, float v)
 // pass key/mouse events on to navigator objects
 void Scene::keyPressEvent(QKeyEvent *event) {
 
-    if(event->key() == Qt::Key_M){
-        this->setMaterial("s");
-    }else{
-        cameraNavigator_->keyPressEvent(event);
-    }
+    cameraNavigator_->keyPressEvent(event);
     update();
 
 }

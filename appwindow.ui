@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>858</width>
+    <width>861</width>
     <height>701</height>
    </rect>
   </property>
@@ -50,7 +50,7 @@
      <property name="focusPolicy">
       <enum>Qt::WheelFocus</enum>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_6">
+     <layout class="QVBoxLayout" name="verticalLayout_5">
       <item>
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
@@ -84,11 +84,6 @@
                <item>
                 <property name="text">
                  <string>Cube</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Bunny</string>
                 </property>
                </item>
                <item>
@@ -201,50 +196,30 @@
             </layout>
            </widget>
           </item>
-         </layout>
-        </widget>
-       </widget>
-      </item>
-      <item>
-       <widget class="QTabWidget" name="tabWidget_2">
-        <property name="currentIndex">
-         <number>0</number>
-        </property>
-        <property name="usesScrollButtons">
-         <bool>false</bool>
-        </property>
-        <widget class="QWidget" name="rendering_tab_2">
-         <property name="styleSheet">
-          <string notr="true"/>
-         </property>
-         <attribute name="title">
-          <string>Rendering</string>
-         </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
            <widget class="QGroupBox" name="groupBox_2">
             <property name="title">
-             <string>CameraType</string>
+             <string>Shader</string>
             </property>
-            <layout class="QVBoxLayout" name="verticalLayout_5">
+            <layout class="QVBoxLayout" name="verticalLayout_3">
              <item>
-              <widget class="QComboBox" name="modelComboBox_2">
+              <widget class="QComboBox" name="materialComboBox">
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
                </property>
                <item>
                 <property name="text">
-                 <string>Cube</string>
+                 <string>Phong</string>
                 </property>
                </item>
                <item>
                 <property name="text">
-                 <string>Duck</string>
+                 <string>Toon</string>
                 </property>
                </item>
                <item>
                 <property name="text">
-                 <string>Teapot</string>
+                 <string>Dots</string>
                 </property>
                </item>
               </widget>
@@ -252,35 +227,22 @@
             </layout>
            </widget>
           </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
          </layout>
         </widget>
        </widget>
-      </item>
-      <item>
-       <spacer name="verticalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>184</height>
-         </size>
-        </property>
-       </spacer>
       </item>
       <item>
        <widget class="QPushButton" name="quitButton">
@@ -302,21 +264,14 @@
       <item>
        <widget class="QLabel" name="label_11">
         <property name="text">
-         <string>left/right: rotate camera (hori.)</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_13">
-        <property name="text">
-         <string>up/down: rotate camera (vert.)</string>
+         <string>left/right: rotate camera</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QLabel" name="label_12">
         <property name="text">
-         <string>+/-: zoom</string>
+         <string>up/down: zoom</string>
         </property>
        </widget>
       </item>
