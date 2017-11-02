@@ -77,7 +77,7 @@ void Scene::makeNodes()
     dots->phong.shininess = 80;
 
     // which material to use as default for all objects?
-    auto std = phong;
+    auto std = cartoon;
 
     // load meshes from .obj files and assign shader programs to them
     meshes_["Duck"]    = std::make_shared<Mesh>(":/models/duck/duck.obj", std);
@@ -137,6 +137,8 @@ void Scene::draw()
     float t = millisec_since_first_draw.count() / 1000.0f;
     for(auto mat : phongMaterials_)
         mat.second->time = t;
+    for(auto mat : cartoonMaterials_)
+        mat.second->time = t;
 
     draw_scene_();
 }
@@ -169,6 +171,10 @@ void Scene::draw_scene_()
         // determine current light position and set it in all materials
         QMatrix4x4 lightToWorld = nodes_["World"]->toParentTransform(lightNodes_[i]);
         for(auto mat : phongMaterials_) {
+            auto phong = mat.second; // mat is of type (key, value)
+            phong->lights[i].position_WC = lightToWorld * QVector3D(0,0,0);
+        }
+        for(auto mat : cartoonMaterials_) {
             auto phong = mat.second; // mat is of type (key, value)
             phong->lights[i].position_WC = lightToWorld * QVector3D(0,0,0);
         }
@@ -270,6 +276,8 @@ void Scene::setLightIntensity(size_t i, float v)
         return;
 
     for(auto mat : phongMaterials_)
+        mat.second->lights[i].intensity = v; update();
+    for(auto mat : cartoonMaterials_)
         mat.second->lights[i].intensity = v; update();
 }
 
