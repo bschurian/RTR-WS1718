@@ -44,9 +44,9 @@ vec3 myphong(vec3 n, vec3 v, vec3 l) {
     float ndotl = dot(n,l);
 
     // ambient / emissive part
-    vec3 ambient = vec3(1,0,0);
-    //if(light.pass == 0) // only add ambient in first light pass
-      //  ambient = phong.k_ambient * ambientLightIntensity;
+    vec3 ambient = vec3(0,0,0);
+    if(light.pass == 0) // only add ambient in first light pass
+        ambient = phong.k_ambient * ambientLightIntensity;
 
     // surface back-facing to light?
     if(ndotl<=0.0)
