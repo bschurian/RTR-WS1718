@@ -77,7 +77,7 @@ void Scene::makeNodes()
     dots->phong.shininess = 80;
 
     // which material to use as default for all objects?
-    auto std = cartoon;
+    auto std = toon;
 
     // load meshes from .obj files and assign shader programs to them
     meshes_["Duck"]    = std::make_shared<Mesh>(":/models/duck/duck.obj", std);
