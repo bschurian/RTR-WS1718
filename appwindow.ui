@@ -88,6 +88,11 @@
                </item>
                <item>
                 <property name="text">
+                 <string>Bunny</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
                  <string>Duck</string>
                 </property>
                </item>

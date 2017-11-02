@@ -38,7 +38,7 @@ uniform int shades;
  *  Calculate surface color based on Phong illumination model.
  */
 
-vec3 myphong(vec3 n, vec3 v, vec3 l) {
+vec3 mycartoon(vec3 n, vec3 v, vec3 l) {
 
     // cosine of angle between light and surface normal.
     float ndotl = dot(n,l);
@@ -68,7 +68,8 @@ vec3 myphong(vec3 n, vec3 v, vec3 l) {
     vec3 specular = phong.k_specular * light.intensity * pow(rdotv, phong.shininess);
 
     // return sum of all contributions
-    return ambient ;//+ diffuse + specular;
+    //return ambient + diffuse + specular;
+    return ceil(ndotl * shades)/shades;
 
 }
 
@@ -80,9 +81,9 @@ void main() {
     vec3 viewdir_EC  = (vec4(0,0,0,1) - position_EC).xyz;
 
     // calculate color using phong, all vectors in eye coordinates
-    vec3 final_color = myphong(normalize(normal_EC),
+    vec3 final_color = mycartoon(normalize(normal_EC),
                                normalize(viewdir_EC),
-                               normalize(lightdir_EC))*vec3(shades, 0.1, 0.1);
+                               normalize(lightdir_EC));
 
     // set output
     outColor = vec4(final_color, 1.0);
