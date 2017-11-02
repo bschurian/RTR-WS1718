@@ -83,6 +83,4 @@ void main() {
 
     // set output
     outColor = vec4(final_color, 1.0);
-    // outColor = vec4(1,0,0, 1.0);
-
 }
