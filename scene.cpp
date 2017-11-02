@@ -67,10 +67,10 @@ void Scene::makeNodes()
 
     auto toon = std::make_shared<CartoonMaterial>(cart_prog);
     cartoonMaterials_["Toon"] = toon;
-    toon->phong.k_diffuse = QVector3D(0.5f,0.5f,0.5f);
-    toon->phong.k_ambient = toon->phong.k_diffuse * 0.3f;
-    toon->phong.shininess = 80;
-    toon->cel.shades = 2;
+    toon->cel.k_diffuse = QVector3D(0.1f,0.1f,0.8f);
+    toon->cel.k_ambient = toon->cel.k_diffuse * 0.3f;
+    toon->cel.shininess = 80;
+    toon->cel.shades = 3;
 
     auto dots = std::make_shared<PhongMaterial>(phong_prog);
     phongMaterials_["Dots"] = dots;
@@ -79,11 +79,11 @@ void Scene::makeNodes()
     dots->phong.shininess = 80;
 
     // which material to use as default for all objects?
-    auto std = toon;
+    auto std = phong;
 
     // load meshes from .obj files and assign shader programs to them
     meshes_["Duck"]    = std::make_shared<Mesh>(":/models/duck/duck.obj", toon);
-    meshes_["Teapot"]  = std::make_shared<Mesh>(":/models/teapot/teapot.obj", std);
+    meshes_["Teapot"]  = std::make_shared<Mesh>(":/models/teapot/teapot.obj", toon);
     meshes_["Bunny"]  = std::make_shared<Mesh>(":/models/stanford_bunny/bunny.obj", std);
 
     // add meshes of some procedural geometry objects (not loaded from OBJ files)

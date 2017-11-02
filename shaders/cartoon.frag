@@ -13,14 +13,16 @@ in vec3 normal_EC;
 // output: fragment/pixel color
 out vec4 outColor;
 
-struct PhongMaterial {
+struct CelMaterial {
+
+    int shades;
     vec3 k_ambient;
     vec3 k_diffuse;
     vec3 k_specular;
     float shininess;
 
 };
-uniform PhongMaterial phong;
+uniform CelMaterial cel;
 uniform vec3 ambientLightIntensity;
 
 struct PointLight {
@@ -32,10 +34,10 @@ uniform PointLight light;
 
 uniform mat4 viewMatrix;
 
-uniform int shades;
 
 /*
  *  Calculate surface color based on Phong illumination model.
+ *  from http://www.konlabs.com/articles_data/cel_shading/
  */
 
 vec3 mycartoon(vec3 n, vec3 v, vec3 l) {
@@ -46,7 +48,7 @@ vec3 mycartoon(vec3 n, vec3 v, vec3 l) {
     // ambient / emissive part
     vec3 ambient = vec3(0,0,0);
     if(light.pass == 0) // only add ambient in first light pass
-        ambient = phong.k_ambient * ambientLightIntensity;
+        ambient = cel.k_ambient * ambientLightIntensity;
 
     // surface back-facing to light?
     if(ndotl<=0.0)
@@ -54,9 +56,11 @@ vec3 mycartoon(vec3 n, vec3 v, vec3 l) {
     else
         ndotl = max(ndotl, 0.0);
 
+    //number of shades
+    float shadeIntensity = ceil(ndotl * cel.shades)/(cel.shades);
+
     // diffuse term
-    vec3 diffuse =  phong.k_diffuse * light.intensity * ndotl;
-    //vec3 diffuse =  vec3(0.1,0.1,0.5) * light.intensity * ndotl;
+    vec3 diffuse =  cel.k_diffuse * light.intensity * shadeIntensity;
 
     // reflected light direction = perfect reflection direction
     vec3 r = reflect(-l,n);
@@ -64,12 +68,14 @@ vec3 mycartoon(vec3 n, vec3 v, vec3 l) {
     // cosine of angle between reflection dir and viewing dir
     float rdotv = max( dot(r,v), 0.0);
 
+    float specularIntensity = ceil(rdotv*cel.shades)/cel.shades;
+
     // specular contribution + gloss map
-    vec3 specular = phong.k_specular * light.intensity * pow(rdotv, phong.shininess);
+    vec3 specular = cel.k_specular * light.intensity * pow(specularIntensity, cel.shininess);
 
     // return sum of all contributions
-    //return ambient + diffuse + specular;
-    return ceil(ndotl * shades)/shades;
+    return ambient + diffuse
+            + specular;
 
 }
 
@@ -84,6 +90,7 @@ void main() {
     vec3 final_color = mycartoon(normalize(normal_EC),
                                normalize(viewdir_EC),
                                normalize(lightdir_EC));
+
 
     // set output
     outColor = vec4(final_color, 1.0);

@@ -18,13 +18,13 @@ void CartoonMaterial::apply(unsigned int light_pass)
     prog_->setUniformValue("light.pass", light_pass);
 
     // Phong
-    prog_->setUniformValue("phong.k_ambient",  phong.k_ambient);
-    prog_->setUniformValue("phong.k_diffuse",  phong.k_diffuse);
-    prog_->setUniformValue("phong.k_specular", phong.k_specular);
-    prog_->setUniformValue("phong.shininess",  phong.shininess);
+    prog_->setUniformValue("cel.k_ambient",  cel.k_ambient);
+    prog_->setUniformValue("cel.k_diffuse",  cel.k_diffuse);
+    prog_->setUniformValue("cel.k_specular", cel.k_specular);
+    prog_->setUniformValue("cel.shininess",  cel.shininess);
 
     // Cartoon
-    prog_->setUniformValue("shades", cel.shades);
+    prog_->setUniformValue("cel.shades", cel.shades);
 
 }
 

@@ -23,16 +23,11 @@ public:
     // ambient light
     QVector3D ambientLightIntensity = QVector3D(0.3f,0.3f,0.3f);
 
-    // properties of the Phong aspects of the material
-    struct Phong {
+    // properties of the Cel aspects of the material
+    struct Cel {
         QVector3D k_ambient  = QVector3D(0.10f,0.10f,0.50f); // red-ish
         QVector3D k_diffuse  = QVector3D(0.10f,0.50f,0.10f); // green-ish
         QVector3D k_specular = QVector3D(0.80f,0.80f,0.80f); // white-ish
-        float     shininess  = 80; // middle-ish
-    } phong;
-
-    // properties of the Cel aspects of the material
-    struct Cel {
         int shades  = 1;
         float     shininess  = 80; // middle-ish
     } cel;
