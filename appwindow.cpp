@@ -16,8 +16,6 @@
 #include "ui_appwindow.h"
 #include "scene.h"
 
-#include <iostream>
-
 AppWindow::AppWindow(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::AppWindow)
@@ -66,7 +64,14 @@ AppWindow::AppWindow(QWidget *parent) :
 
     connect(ui->modelComboBox, &QComboBox::currentTextChanged, [this](QString value)
     {
+
         scene().setSceneNode(value);
+    });
+
+    connect(ui->materialComboBox, &QComboBox::currentTextChanged, [this](QString value)
+    {
+
+        scene().setMaterialNode(value,ui->modelComboBox->currentText());
     });
 
     connect(ui->light0Slider, &QSlider::valueChanged, [this](int value)
