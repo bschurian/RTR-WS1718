@@ -50,8 +50,10 @@ public slots:
 
     // change the material of the current node
     void setMaterialNode(QString mat, QString node);
-    //change the color of the Dots(r,g or b-value)
+    // change the color(type - r,g or b-value), the radius and the frequency of the Dots
     void setDotColor(QString type,QString value);
+    void setDotRadius(float value);
+    void setDotFrequency(int value);
 
     // change background color
     void setBackgroundColor(QVector3D rgb);

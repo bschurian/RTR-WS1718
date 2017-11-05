@@ -14,13 +14,12 @@ in vec2 texCoords_frag;
 out vec4 outColor;
 
 struct DotsMaterial {
-
     int shades;
     vec3 k_ambient;
     vec3 k_diffuse;
     vec3 k_specular;
     float shininess;
-    float frequency;#
+    float frequency;
     float radius;
     vec3 dotcolor;
 };
@@ -81,24 +80,39 @@ vec3 mycartoon(vec3 n, vec3 v, vec3 l) {
     vec3 specular = dots.k_specular * light.intensity * pow(specularIntensity, dots.shininess);
 //return pow(sin(t), cel.shininess);
     // return sum of all contributions
-    return ambient + diffuse + specular;
+
+    // dots
+    // Dots math
+    vec2 nearest = 2.0*fract(dots.frequency * texCoords_frag) - 1.0;
+    float dist = length(nearest);
+    // decision - is position in dot = dotcolor if not = normal color
+    vec3 fragcolor = mix(dots.dotcolor, ambient, step(dots.radius, dist));
+
+    return fragcolor + diffuse + specular;
 
 }
-/**
-//vec3 dots(vec3 colormain,vec3 colordot,float freq,vec3 ){
-vec3 dots(){
 
+//vec3 dots(vec3 colormain,vec3 colordot,float freq,vec3 ){
+vec3 make_dots(vec3 colormain,vec3 colordot,float freq,float radius){
+    /**
     vec3 black = vec3(0.0,0.0,0.0);
     vec3 white = vec3(1.0,1.0,1.0);
+    vec3 dotcolor;
     //später radius und freq(1/freq) einsetzen
-    if(mod(texCoords_frag.x,0.05)>=0.25)
-        vec3 dotcolor = white;
+    if(mod(texCoords_frag.x,0.5)>=0.25)
+        dotcolor = white;
     else
-        vec3 dotcolor = black;
+        dotcolor = black;
 
     return dotcolor;
+    **/
+    vec2 nearest = 2.0*fract(freq * texCoords_frag) - 1.0;
+    float dist = length(nearest);
+    vec3 fragcolor = mix(colordot, colormain, step(radius, dist));
+
+    return fragcolor;
 }
-**/
+
 void main() {
     // calculate all required vectors in camera/eye coordinates
     vec4 lightpos_EC = viewMatrix * light.position_WC;
@@ -118,6 +132,7 @@ void main() {
     vec3 mixedcolor = final_color + dotcolor;
     **/
     // set output
+    vec3 newcolor = make_dots(final_color,dots.dotcolor,dots.frequency,dots.radius);
     outColor = vec4(final_color, 1.0);
 }
 

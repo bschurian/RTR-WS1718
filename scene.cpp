@@ -152,6 +152,8 @@ void Scene::draw()
         mat.second->time = t;
     for(auto mat : cartoonMaterials_)
         mat.second->time = t;
+    for(auto mat : dotsMaterials_)
+        mat.second->time = t;
 
     draw_scene_();
 }
@@ -188,6 +190,10 @@ void Scene::draw_scene_()
             phong->lights[i].position_WC = lightToWorld * QVector3D(0,0,0);
         }
         for(auto mat : cartoonMaterials_) {
+            auto phong = mat.second; // mat is of type (key, value)
+            phong->lights[i].position_WC = lightToWorld * QVector3D(0,0,0);
+        }
+        for(auto mat : dotsMaterials_) {
             auto phong = mat.second; // mat is of type (key, value)
             phong->lights[i].position_WC = lightToWorld * QVector3D(0,0,0);
         }
@@ -292,19 +298,43 @@ void Scene::setLightIntensity(size_t i, float v)
         mat.second->lights[i].intensity = v; update();
     for(auto mat : cartoonMaterials_)
         mat.second->lights[i].intensity = v; update();
+    for(auto mat : dotsMaterials_)
+        mat.second->lights[i].intensity = v; update();
 }
 
 void Scene::setDotColor(QString type,QString value)
 {
-    if(type=="r"){
 
+    if(type=="r"){
+        float y = dotsMaterials_["Dots"]->dots.dotcolor.y();
+        float z = dotsMaterials_["Dots"]->dots.dotcolor.z();
+        QVector3D newdc = QVector3D(value.toFloat(),y,z);
+        dotsMaterials_["Dots"]->dots.dotcolor=newdc;
     }
     else if(type == "g"){
-
+        float x = dotsMaterials_["Dots"]->dots.dotcolor.x();
+        float z = dotsMaterials_["Dots"]->dots.dotcolor.z();
+        QVector3D dc = dotsMaterials_["Dots"]->dots.dotcolor;
+        QVector3D newdc = QVector3D(x,value.toFloat(),z);
+        dotsMaterials_["Dots"]->dots.dotcolor=newdc;
     }
     else{
-
+        float x = dotsMaterials_["Dots"]->dots.dotcolor.x();
+        float y = dotsMaterials_["Dots"]->dots.dotcolor.y();
+        QVector3D newdc = QVector3D(x,y,value.toFloat());
+        dotsMaterials_["Dots"]->dots.dotcolor=newdc;
     }
+    update();
+}
+
+void Scene::setDotFrequency(int value){
+    dotsMaterials_["Dots"]->dots.frequency=float(value);
+    update();
+}
+
+void Scene::setDotRadius(float value){
+    dotsMaterials_["Dots"]->dots.radius=value;
+    update();
 }
 
 // pass key/mouse events on to navigator objects

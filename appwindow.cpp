@@ -79,6 +79,16 @@ AppWindow::AppWindow(QWidget *parent) :
         scene().setLightIntensity(0, float(value)/100); // slider goes from 0...1000
     });
 
+    connect(ui->freqSlider, &QSlider::valueChanged, [this](int value)
+    {
+        scene().setDotFrequency(value); // slider goes from 0...1000
+    });
+
+    connect(ui->radiusSlider, &QSlider::valueChanged, [this](int value)
+    {
+        scene().setDotRadius(float(value)/100); // slider goes from 0...1000
+    });
+
     connect(ui->dotEdit_r,&QLineEdit::textChanged, [this](QString value)
     {
        scene().setDotColor("r",value);
