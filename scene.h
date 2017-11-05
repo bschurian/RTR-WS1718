@@ -12,6 +12,7 @@
 #include "camera.h"
 #include "material/phong.h"
 #include "material/cartoon.h"
+#include "material/dots.h"
 #include "navigator/rotate_y.h"
 
 #include <memory> // std::unique_ptr
@@ -49,6 +50,8 @@ public slots:
 
     // change the material of the current node
     void setMaterialNode(QString mat, QString node);
+    //change the color of the Dots(r,g or b-value)
+    void setDotColor(QString type,QString value);
 
     // change background color
     void setBackgroundColor(QVector3D rgb);
@@ -103,6 +106,7 @@ protected:
     // different materials to be demonstrated
     std::map<QString, std::shared_ptr<PhongMaterial>> phongMaterials_;
     std::map<QString, std::shared_ptr<CartoonMaterial>> cartoonMaterials_;
+    std::map<QString, std::shared_ptr<DotsMaterial>> dotsMaterials_;
 
     // mesh(es) to be used / shared
     std::map<QString, std::shared_ptr<Mesh>> meshes_;
