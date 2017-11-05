@@ -57,7 +57,8 @@ void Scene::makeNodes()
     // load shader source files and compile them into OpenGL program objects
     auto phong_prog = createProgram(":/shaders/phong.vert", ":/shaders/phong.frag");
     auto cart_prog = createProgram(":/shaders/cartoon.vert", ":/shaders/cartoon.frag");
-    auto proc_prog = createProgram(":/shaders/procedural.vert", ":/shaders/procedural.frag");
+    auto prog_prog2 = createProgram(":/shaders/cartoon.vert", ":/shaders/cartoon.frag");
+    auto dots_prog = createProgram(":/shaders/dots.vert", ":/shaders/dots.frag");
 
     // Phong materials
     auto phong = std::make_shared<PhongMaterial>(phong_prog);
@@ -73,21 +74,25 @@ void Scene::makeNodes()
     toon->cel.shininess = 80;
     toon->cel.shades = 3;
 
-    auto dots = std::make_shared<PhongMaterial>(phong_prog);
-    phongMaterials_["Dots"] = dots;
-    dots->phong.k_diffuse = QVector3D(0.1f,0.8f,0.1f);
-    dots->phong.k_ambient = dots->phong.k_diffuse * 0.3f;
-    dots->phong.shininess = 80;
+    auto dots = std::make_shared<DotsMaterial>(dots_prog);
+    dotsMaterials_["Dots"] = dots;
+    dots->dots.k_diffuse = QVector3D(0.1f,0.8f,0.1f);
+    dots->dots.k_ambient = dots->dots.k_diffuse * 0.3f;
+    dots->dots.shininess = 80;
+    dots->dots.shades = 3;
+    dots->dots.frequency = 10.0;
+    dots->dots.radius = 0.25;
+    dots->dots.dotcolor = QVector3D(0.5f,0.6f,0.7f);
 
-    auto procedural = std::make_shared<AnimatedMaterial>(proc_prog);
-    animatedMaterials_["Procedural"] = procedural;
+    auto procedural = std::make_shared<PhongMaterial>(phong_prog);
+    phongMaterials_["Procedural"] = procedural;
 
     // which material to use as default for all objects?
-    auto std = phong;
+    auto std = dots;
 
     // load meshes from .obj files and assign shader programs to them
-    meshes_["Duck"]    = std::make_shared<Mesh>(":/models/duck/duck.obj", procedural);
-    meshes_["Teapot"]  = std::make_shared<Mesh>(":/models/teapot/teapot.obj", toon);
+    meshes_["Duck"]    = std::make_shared<Mesh>(":/models/duck/duck.obj", std);
+    meshes_["Teapot"]  = std::make_shared<Mesh>(":/models/teapot/teapot.obj", std);
     meshes_["Bunny"]  = std::make_shared<Mesh>(":/models/stanford_bunny/bunny.obj", std);
 
     // add meshes of some procedural geometry objects (not loaded from OBJ files)
@@ -146,8 +151,6 @@ void Scene::draw()
     for(auto mat : phongMaterials_)
         mat.second->time = t;
     for(auto mat : cartoonMaterials_)
-        mat.second->time = t;
-    for(auto mat : animatedMaterials_)
         mat.second->time = t;
 
     draw_scene_();
@@ -289,7 +292,19 @@ void Scene::setLightIntensity(size_t i, float v)
         mat.second->lights[i].intensity = v; update();
     for(auto mat : cartoonMaterials_)
         mat.second->lights[i].intensity = v; update();
+}
 
+void Scene::setDotColor(QString type,QString value)
+{
+    if(type=="r"){
+
+    }
+    else if(type == "g"){
+
+    }
+    else{
+
+    }
 }
 
 // pass key/mouse events on to navigator objects

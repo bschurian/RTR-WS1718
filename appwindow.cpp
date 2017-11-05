@@ -79,6 +79,20 @@ AppWindow::AppWindow(QWidget *parent) :
         scene().setLightIntensity(0, float(value)/100); // slider goes from 0...1000
     });
 
+    connect(ui->dotEdit_r,&QLineEdit::textChanged, [this](QString value)
+    {
+       scene().setDotColor("r",value);
+    });
+
+    connect(ui->dotEdit_g,&QLineEdit::textChanged, [this](QString value)
+    {
+       scene().setDotColor("g",value);
+    });
+
+    connect(ui->dotEdit_b,&QLineEdit::textChanged, [this](QString value)
+    {
+       scene().setDotColor("b",value);
+    });
 }
 
 // called when the window is initially shown

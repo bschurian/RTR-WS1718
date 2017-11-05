@@ -1,9 +1,11 @@
 /*
- * fragment shader for phong + textures + bumps
+ * fragment shader for procedural seismic-wave-like ripple
  *
  */
 
 #version 150
+
+uniform float time;
 
 // output - transformed to eye coordinates (EC)
 in vec4 position_EC;
@@ -24,7 +26,7 @@ void main() {
 
     // set output
 //    outColor = vec4(final_color, 1.0);
-    outColor = vec4(0.9);
+    outColor = vec4(0.1);
 //    outColor = position_EC;
 //    sdas;
 }

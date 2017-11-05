@@ -27,7 +27,8 @@ HEADERS      += \
     navigator/position_navigator.h \
     navigator/rotate_y.h \
     material/cartoon.h \
-    material/animatedmaterial.h
+    material/animatedmaterial.h \
+    material/dots.h
 
 # C++ SOURCE FILES TO BE COMPILED AND LINKED TOGETHER
 SOURCES      += \
@@ -49,7 +50,8 @@ SOURCES      += \
     navigator/position_navigator.cpp \
     navigator/rotate_y.cpp \
     material/cartoon.cpp \
-    material/animatedmaterial.cpp
+    material/animatedmaterial.cpp \
+    material/dots.cpp
 
 # RESOURCE FILES TO BE PROCESSED BY QT
 RESOURCES    += \
