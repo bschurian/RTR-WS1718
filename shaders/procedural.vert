@@ -20,9 +20,11 @@ uniform mat3 normalMatrix;
 // in: position and normal vector in model coordinates (_MC)
 in vec3 position_MC;
 in vec3 normal_MC;
+in vec2 texcoord;
 
 out vec4 position_EC;
 out vec3 normal_EC;
+out vec2 texCoords_frag;
 
 void main(void) {
 
@@ -35,6 +37,7 @@ void main(void) {
     // normal direction in eye coordinates
     normal_EC  = normalMatrix * normal_MC*(-1);
 
+    texCoords_frag = texcoord;
 }
 
 

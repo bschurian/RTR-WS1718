@@ -20,7 +20,7 @@ struct DotsMaterial {
     vec3 k_diffuse;
     vec3 k_specular;
     float shininess;
-    float frequency;#
+    float frequency;
     float radius;
     vec3 dotcolor;
 };
@@ -79,7 +79,7 @@ vec3 mycartoon(vec3 n, vec3 v, vec3 l) {
 
     // specular contribution + gloss map
     vec3 specular = dots.k_specular * light.intensity * pow(specularIntensity, dots.shininess);
-//return pow(sin(t), cel.shininess);
+
     // return sum of all contributions
     return ambient + diffuse + specular;
 

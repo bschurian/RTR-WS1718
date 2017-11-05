@@ -28,7 +28,8 @@ HEADERS      += \
     navigator/rotate_y.h \
     material/cartoon.h \
     material/animatedmaterial.h \
-    material/dots.h
+    material/dots.h \
+    material/wave.h
 
 # C++ SOURCE FILES TO BE COMPILED AND LINKED TOGETHER
 SOURCES      += \
@@ -51,7 +52,8 @@ SOURCES      += \
     navigator/rotate_y.cpp \
     material/cartoon.cpp \
     material/animatedmaterial.cpp \
-    material/dots.cpp
+    material/dots.cpp \
+    material/wave.cpp
 
 # RESOURCE FILES TO BE PROCESSED BY QT
 RESOURCES    += \

@@ -6,5 +6,7 @@
         <file>shaders/cartoon.vert</file>
         <file>shaders/dots.frag</file>
         <file>shaders/dots.vert</file>
+        <file>shaders/procedural.frag</file>
+        <file>shaders/procedural.vert</file>
     </qresource>
 </RCC>

@@ -13,6 +13,7 @@
 #include "material/phong.h"
 #include "material/cartoon.h"
 #include "material/dots.h"
+#include "material/wave.h"
 #include "navigator/rotate_y.h"
 
 #include <memory> // std::unique_ptr
@@ -107,6 +108,7 @@ protected:
     std::map<QString, std::shared_ptr<PhongMaterial>> phongMaterials_;
     std::map<QString, std::shared_ptr<CartoonMaterial>> cartoonMaterials_;
     std::map<QString, std::shared_ptr<DotsMaterial>> dotsMaterials_;
+    std::map<QString, std::shared_ptr<AnimatedMaterial>> waveMaterials_;
 
     // mesh(es) to be used / shared
     std::map<QString, std::shared_ptr<Mesh>> meshes_;
