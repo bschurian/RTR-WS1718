@@ -4,5 +4,7 @@
         <file>shaders/phong.vert</file>
         <file>shaders/cartoon.frag</file>
         <file>shaders/cartoon.vert</file>
+        <file>shaders/procedural.frag</file>
+        <file>shaders/procedural.vert</file>
     </qresource>
 </RCC>

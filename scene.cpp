@@ -57,7 +57,7 @@ void Scene::makeNodes()
     // load shader source files and compile them into OpenGL program objects
     auto phong_prog = createProgram(":/shaders/phong.vert", ":/shaders/phong.frag");
     auto cart_prog = createProgram(":/shaders/cartoon.vert", ":/shaders/cartoon.frag");
-    auto prog_prog2 = createProgram(":/shaders/cartoon.vert", ":/shaders/cartoon.frag");
+    auto proc_prog = createProgram(":/shaders/procedural.vert", ":/shaders/procedural.frag");
 
     // Phong materials
     auto phong = std::make_shared<PhongMaterial>(phong_prog);
@@ -79,14 +79,14 @@ void Scene::makeNodes()
     dots->phong.k_ambient = dots->phong.k_diffuse * 0.3f;
     dots->phong.shininess = 80;
 
-    auto procedural = std::make_shared<PhongMaterial>(phong_prog);
-    phongMaterials_["Procedural"] = procedural;
+    auto procedural = std::make_shared<AnimatedMaterial>(proc_prog);
+    animatedMaterials_["Procedural"] = procedural;
 
     // which material to use as default for all objects?
     auto std = phong;
 
     // load meshes from .obj files and assign shader programs to them
-    meshes_["Duck"]    = std::make_shared<Mesh>(":/models/duck/duck.obj", toon);
+    meshes_["Duck"]    = std::make_shared<Mesh>(":/models/duck/duck.obj", procedural);
     meshes_["Teapot"]  = std::make_shared<Mesh>(":/models/teapot/teapot.obj", toon);
     meshes_["Bunny"]  = std::make_shared<Mesh>(":/models/stanford_bunny/bunny.obj", std);
 
@@ -146,6 +146,8 @@ void Scene::draw()
     for(auto mat : phongMaterials_)
         mat.second->time = t;
     for(auto mat : cartoonMaterials_)
+        mat.second->time = t;
+    for(auto mat : animatedMaterials_)
         mat.second->time = t;
 
     draw_scene_();
@@ -287,6 +289,7 @@ void Scene::setLightIntensity(size_t i, float v)
         mat.second->lights[i].intensity = v; update();
     for(auto mat : cartoonMaterials_)
         mat.second->lights[i].intensity = v; update();
+
 }
 
 // pass key/mouse events on to navigator objects

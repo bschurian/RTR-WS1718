@@ -28,7 +28,7 @@ public:
         QVector3D k_ambient  = QVector3D(0.10f,0.10f,0.50f); // red-ish
         QVector3D k_diffuse  = QVector3D(0.10f,0.50f,0.10f); // green-ish
         QVector3D k_specular = QVector3D(0.80f,0.80f,0.80f); // white-ish
-        int shades  = 1;
+        int shades  = 2;
         float     shininess  = 80; // middle-ish
     } cel;
 

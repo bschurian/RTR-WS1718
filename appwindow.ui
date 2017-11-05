@@ -219,6 +219,11 @@
                </item>
                <item>
                 <property name="text">
+                 <string>Procedural</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
                  <string>Toon</string>
                 </property>
                </item>
