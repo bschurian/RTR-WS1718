@@ -57,6 +57,7 @@ void Scene::makeNodes()
     // load shader source files and compile them into OpenGL program objects
     auto phong_prog = createProgram(":/shaders/phong.vert", ":/shaders/phong.frag");
     auto cart_prog = createProgram(":/shaders/cartoon.vert", ":/shaders/cartoon.frag");
+    auto prog_prog2 = createProgram(":/shaders/cartoon.vert", ":/shaders/cartoon.frag");
 
     // Phong materials
     auto phong = std::make_shared<PhongMaterial>(phong_prog);
@@ -77,6 +78,9 @@ void Scene::makeNodes()
     dots->phong.k_diffuse = QVector3D(0.1f,0.8f,0.1f);
     dots->phong.k_ambient = dots->phong.k_diffuse * 0.3f;
     dots->phong.shininess = 80;
+
+    auto procedural = std::make_shared<PhongMaterial>(phong_prog);
+    phongMaterials_["Procedural"] = procedural;
 
     // which material to use as default for all objects?
     auto std = phong;
