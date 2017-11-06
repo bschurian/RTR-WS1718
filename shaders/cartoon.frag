@@ -63,6 +63,13 @@ vec3 mycartoon(vec3 n, vec3 v, vec3 l) {
         return 1;
     }
 
+    /*if (normal_EC < mix(unlitOutlineThickness, litOutlineThickness,
+                   max(0.0, dot(normalDirection, lightDirection))))
+                {
+                   fragmentColor =
+                      vec3(_LightColor0) * vec3(_OutlineColor);
+                }*/
+
     // diffuse term
     vec3 diffuse =  cel.k_diffuse * light.intensity * shadeIntensity;
 
@@ -72,10 +79,8 @@ vec3 mycartoon(vec3 n, vec3 v, vec3 l) {
     // cosine of angle between reflection dir and viewing dir
     float rdotv = max( dot(r,v), 0.0);
 
-    float specularIntensity = ceil(rdotv*cel.shades-0.5)/cel.shades;
-
     // specular contribution + gloss map
-    vec3 specular = cel.k_specular * light.intensity * pow(specularIntensity, cel.shininess);
+    vec3 specular = cel.k_specular * light.intensity * round(rdotv * (cel.shininess/100));
 
     // return sum of all contributions
     return ambient + diffuse + specular;
