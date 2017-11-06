@@ -13,6 +13,7 @@
 #include "material/phong.h"
 #include "material/cartoon.h"
 #include "material/dots.h"
+#include "material/wave.h"
 #include "navigator/rotate_y.h"
 
 #include <memory> // std::unique_ptr
@@ -54,6 +55,13 @@ public slots:
     void setDotColor(QString type,QString value);
     void setDotRadius(float value);
     void setDotFrequency(int value);
+    void setToonShades(int s);
+    void setToonShininess(float s);
+    //change the color of the Dots(r,g or b-value)
+    void setDotColor(QString type,QString value);
+    void setWaveSpeed(float speed);
+    void setWaveDepth(float depth);
+    void setWaveHeigth(float heigth);
 
     // change background color
     void setBackgroundColor(QVector3D rgb);
@@ -109,6 +117,7 @@ protected:
     std::map<QString, std::shared_ptr<PhongMaterial>> phongMaterials_;
     std::map<QString, std::shared_ptr<CartoonMaterial>> cartoonMaterials_;
     std::map<QString, std::shared_ptr<DotsMaterial>> dotsMaterials_;
+    std::map<QString, std::shared_ptr<WaveMaterial>> waveMaterials_;
 
     // mesh(es) to be used / shared
     std::map<QString, std::shared_ptr<Mesh>> meshes_;

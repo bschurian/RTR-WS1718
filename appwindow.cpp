@@ -78,7 +78,6 @@ AppWindow::AppWindow(QWidget *parent) :
     {
         scene().setLightIntensity(0, float(value)/100); // slider goes from 0...1000
     });
-
     connect(ui->freqSlider, &QSlider::valueChanged, [this](int value)
     {
         scene().setDotFrequency(value); // slider goes from 0...1000
@@ -88,7 +87,14 @@ AppWindow::AppWindow(QWidget *parent) :
     {
         scene().setDotRadius(float(value)/100); // slider goes from 0...1000
     });
-
+    connect(ui->shadesSpinBox,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int shades)
+    {
+       scene().setToonShades(shades);
+    });
+    connect(ui->shininesslSlider,&QSlider::valueChanged, [this](float shininess)
+    {
+       scene().setToonShininess(shininess);
+    });
     connect(ui->dotEdit_r,&QLineEdit::textChanged, [this](QString value)
     {
        scene().setDotColor("r",value);
@@ -103,6 +109,19 @@ AppWindow::AppWindow(QWidget *parent) :
     {
        scene().setDotColor("b",value);
     });
+    connect(ui->depthSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double depth)
+    {
+       scene().setWaveDepth(depth);
+    });
+    connect(ui->speedSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double speed)
+    {
+       scene().setWaveSpeed(speed);
+    });
+    connect(ui->heigthSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double heigth)
+    {
+       scene().setWaveHeigth(heigth);
+    });
+
 }
 
 // called when the window is initially shown
@@ -123,6 +142,16 @@ void AppWindow::setDefaultUIValues() {
     ui->light0Slider->setValue(80);
     ui->modelComboBox->setCurrentText("Cube");
     ui->modelComboBox->setCurrentText("Duck");
+    ui->shadesSpinBox->setValue(4);
+    ui->shadesSpinBox->setValue(3);
+    ui->shininesslSlider->setValue(70);
+    ui->shininesslSlider->setValue(80);
+    ui->depthSpinBox->setValue(0.2);
+    ui->depthSpinBox->setValue(0.1);
+    ui->speedSpinBox->setValue(2.0f);
+    ui->speedSpinBox->setValue(1.0f);
+    ui->heigthSpinBox->setValue(2.0f);
+    ui->heigthSpinBox->setValue(0.07f);
 
 }
 

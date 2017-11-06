@@ -10,6 +10,9 @@ void PhongMaterial::apply(unsigned int light_pass)
     // globals
     prog_->setUniformValue("ambientLightIntensity", ambientLightIntensity);
 
+    // globals
+    prog_->setUniformValue("time", time);
+
     // point light
     assert(light_pass>=0 && light_pass<lights.size());
     prog_->setUniformValue("light.position_WC", lights[light_pass].position_WC);
@@ -19,7 +22,6 @@ void PhongMaterial::apply(unsigned int light_pass)
     // Phong
     prog_->setUniformValue("phong.k_ambient",  phong.k_ambient);
     prog_->setUniformValue("phong.k_diffuse",  phong.k_diffuse);
-    //prog_->setUniformValue("phong.k_diffuse",  QVector3D(0.10f,0.50f,0.10f));
     prog_->setUniformValue("phong.k_specular", phong.k_specular);
     prog_->setUniformValue("phong.shininess",  phong.shininess);
 

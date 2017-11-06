@@ -57,8 +57,8 @@ void Scene::makeNodes()
     // load shader source files and compile them into OpenGL program objects
     auto phong_prog = createProgram(":/shaders/phong.vert", ":/shaders/phong.frag");
     auto cart_prog = createProgram(":/shaders/cartoon.vert", ":/shaders/cartoon.frag");
-    auto prog_prog2 = createProgram(":/shaders/cartoon.vert", ":/shaders/cartoon.frag");
     auto dots_prog = createProgram(":/shaders/dots.vert", ":/shaders/dots.frag");
+    auto proc_prog = createProgram(":/shaders/procedural.vert", ":/shaders/procedural.frag");
 
     // Phong materials
     auto phong = std::make_shared<PhongMaterial>(phong_prog);
@@ -84,11 +84,11 @@ void Scene::makeNodes()
     dots->dots.radius = 0.25;
     dots->dots.dotcolor = QVector3D(0.5f,0.6f,0.7f);
 
-    auto procedural = std::make_shared<PhongMaterial>(phong_prog);
-    phongMaterials_["Procedural"] = procedural;
+    auto procedural = std::make_shared<WaveMaterial>(proc_prog);
+    waveMaterials_["Procedural"] = procedural;
 
     // which material to use as default for all objects?
-    auto std = dots;
+    auto std = toon;
 
     // load meshes from .obj files and assign shader programs to them
     meshes_["Duck"]    = std::make_shared<Mesh>(":/models/duck/duck.obj", std);
@@ -153,6 +153,8 @@ void Scene::draw()
     for(auto mat : cartoonMaterials_)
         mat.second->time = t;
     for(auto mat : dotsMaterials_)
+        mat.second->time = t;
+    for(auto mat : waveMaterials_)
         mat.second->time = t;
 
     draw_scene_();
@@ -302,6 +304,20 @@ void Scene::setLightIntensity(size_t i, float v)
         mat.second->lights[i].intensity = v; update();
 }
 
+void Scene::setToonShades(int shades)
+{
+    for(auto mat : cartoonMaterials_)
+        mat.second->cel.shades = shades; update();
+
+}
+
+void Scene::setToonShininess(float s)
+{
+    for(auto mat : cartoonMaterials_)
+        mat.second->cel.shininess = s; update();
+        qInfo(to_string(s).c_str());
+}
+
 void Scene::setDotColor(QString type,QString value)
 {
 
@@ -335,6 +351,23 @@ void Scene::setDotFrequency(int value){
 void Scene::setDotRadius(float value){
     dotsMaterials_["Dots"]->dots.radius=value;
     update();
+}
+
+void Scene::setWaveSpeed(float speed)
+{
+    for(auto mat : waveMaterials_)
+        mat.second->wave.speed = speed; update();
+}
+
+void Scene::setWaveDepth(float depth)
+{
+    for(auto mat : waveMaterials_)
+        mat.second->wave.depth = depth; update();
+}
+void Scene::setWaveHeigth(float heigth)
+{
+    for(auto mat : waveMaterials_)
+        mat.second->wave.heigth = heigth; update();
 }
 
 // pass key/mouse events on to navigator objects

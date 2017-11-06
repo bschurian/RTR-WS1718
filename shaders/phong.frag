@@ -53,7 +53,6 @@ vec3 myphong(vec3 n, vec3 v, vec3 l) {
 
     // diffuse term
     vec3 diffuse =  phong.k_diffuse * light.intensity * ndotl;
-    //vec3 diffuse =  vec3(0.1,0.1,0.5) * light.intensity * ndotl;
 
     // reflected light direction = perfect reflection direction
     vec3 r = reflect(-l,n);

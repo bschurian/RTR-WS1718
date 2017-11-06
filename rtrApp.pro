@@ -28,7 +28,8 @@ HEADERS      += \
     navigator/rotate_y.h \
     material/cartoon.h \
     material/animatedmaterial.h \
-    material/dots.h
+    material/dots.h \
+    material/wave.h
 
 # C++ SOURCE FILES TO BE COMPILED AND LINKED TOGETHER
 SOURCES      += \
@@ -51,7 +52,8 @@ SOURCES      += \
     navigator/rotate_y.cpp \
     material/cartoon.cpp \
     material/animatedmaterial.cpp \
-    material/dots.cpp
+    material/dots.cpp \
+    material/wave.cpp
 
 # RESOURCE FILES TO BE PROCESSED BY QT
 RESOURCES    += \
@@ -68,7 +70,8 @@ win32: LIBS += -lopengl32
 # hack to work around a bug in QtCreator, not always running qmake when it should
 # see https://bugreports.qt.io/browse/QTBUG-13334
 shaders.depends += \
-    $$PWD/assets/shaders/phong.frag $$PWD/assets/shaders/phong.vert \
-    $$PWD/assets/shaders/phong.frag $$PWD/assets/shaders/cartoon.vert
+    $$PWD/assets/shaders/procedural.frag $$PWD/assets/shaders/procedural.vert
+#    $$PWD/assets/shaders/phong.frag $$PWD/assets/shaders/phong.vert \
+ #   $$PWD/assets/shaders/cartoon.frag $$PWD/assets/shaders/cartoon.vert \
 shaders.commands =
 QMAKE_EXTRA_TARGETS += shaders

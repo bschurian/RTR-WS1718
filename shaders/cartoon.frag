@@ -52,12 +52,12 @@ vec3 mycartoon(vec3 n, vec3 v, vec3 l) {
 
     // surface back-facing to light?
     if(ndotl<=0.0)
-        return 1;
+        return 0.5;
     else
         ndotl = max(ndotl, 0.0);
 
     //number of shades
-    float shadeIntensity = ceil(ndotl * cel.shades -0.5)/(cel.shades);
+    float shadeIntensity = ceil(ndotl * cel.shades)/(cel.shades);
 
     if(shadeIntensity < 0){
         return 1;
@@ -76,7 +76,7 @@ vec3 mycartoon(vec3 n, vec3 v, vec3 l) {
 
     // specular contribution + gloss map
     vec3 specular = cel.k_specular * light.intensity * pow(specularIntensity, cel.shininess);
-//return pow(sin(t), cel.shininess);
+
     // return sum of all contributions
     return ambient + diffuse + specular;
 
