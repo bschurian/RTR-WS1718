@@ -78,7 +78,15 @@ AppWindow::AppWindow(QWidget *parent) :
     {
         scene().setLightIntensity(0, float(value)/100); // slider goes from 0...1000
     });
+    connect(ui->freqSlider, &QSlider::valueChanged, [this](int value)
+    {
+        scene().setDotFrequency(value); // slider goes from 0...1000
+    });
 
+    connect(ui->radiusSlider, &QSlider::valueChanged, [this](int value)
+    {
+        scene().setDotRadius(float(value)/100); // slider goes from 0...1000
+    });
     connect(ui->shadesSpinBox,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int shades)
     {
        scene().setToonShades(shades);
