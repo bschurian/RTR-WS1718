@@ -79,6 +79,14 @@ AppWindow::AppWindow(QWidget *parent) :
         scene().setLightIntensity(0, float(value)/100); // slider goes from 0...1000
     });
 
+    connect(ui->shadesSpinBox,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int shades)
+    {
+       scene().setToonShades(shades);
+    });
+    connect(ui->shininesslSlider,&QSlider::valueChanged, [this](float shininess)
+    {
+       scene().setToonShininess(shininess);
+    });
     connect(ui->dotEdit_r,&QLineEdit::textChanged, [this](QString value)
     {
        scene().setDotColor("r",value);
@@ -126,6 +134,10 @@ void AppWindow::setDefaultUIValues() {
     ui->light0Slider->setValue(80);
     ui->modelComboBox->setCurrentText("Cube");
     ui->modelComboBox->setCurrentText("Duck");
+    ui->shadesSpinBox->setValue(4);
+    ui->shadesSpinBox->setValue(3);
+    ui->shininesslSlider->setValue(70);
+    ui->shininesslSlider->setValue(80);
     ui->depthSpinBox->setValue(0.2);
     ui->depthSpinBox->setValue(0.1);
     ui->speedSpinBox->setValue(2.0f);

@@ -51,6 +51,8 @@ public slots:
 
     // change the material of the current node
     void setMaterialNode(QString mat, QString node);
+    void setToonShades(int s);
+    void setToonShininess(float s);
     //change the color of the Dots(r,g or b-value)
     void setDotColor(QString type,QString value);
     void setWaveSpeed(float speed);

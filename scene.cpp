@@ -88,7 +88,7 @@ void Scene::makeNodes()
     waveMaterials_["Procedural"] = procedural;
 
     // which material to use as default for all objects?
-    auto std = procedural;
+    auto std = toon;
 
     // load meshes from .obj files and assign shader programs to them
     meshes_["Duck"]    = std::make_shared<Mesh>(":/models/duck/duck.obj", std);
@@ -294,6 +294,20 @@ void Scene::setLightIntensity(size_t i, float v)
         mat.second->lights[i].intensity = v; update();
     for(auto mat : cartoonMaterials_)
         mat.second->lights[i].intensity = v; update();
+}
+
+void Scene::setToonShades(int shades)
+{
+    for(auto mat : cartoonMaterials_)
+        mat.second->cel.shades = shades; update();
+
+}
+
+void Scene::setToonShininess(float s)
+{
+    for(auto mat : cartoonMaterials_)
+        mat.second->cel.shininess = s; update();
+        qInfo(to_string(s).c_str());
 }
 
 void Scene::setDotColor(QString type,QString value)

@@ -404,38 +404,89 @@
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_6">
              <item>
-              <layout class="QFormLayout" name="formLayout">
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_speed">
-                 <property name="text">
-                  <string>speed</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QDoubleSpinBox" name="speedSpinBox"/>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_depth">
-                 <property name="text">
-                  <string>depth</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QDoubleSpinBox" name="depthSpinBox"/>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_heigth">
-                 <property name="text">
-                  <string>heigth</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <widget class="QDoubleSpinBox" name="heigthSpinBox"/>
-               </item>
-              </layout>
+              <widget class="QWidget" name="widget_6" native="true">
+               <layout class="QFormLayout" name="formLayout">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_speed">
+                  <property name="text">
+                   <string>speed</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QDoubleSpinBox" name="speedSpinBox"/>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="label_depth">
+                  <property name="text">
+                   <string>depth</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QDoubleSpinBox" name="depthSpinBox"/>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="label_heigth">
+                  <property name="text">
+                   <string>heigth</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QDoubleSpinBox" name="heigthSpinBox"/>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="toonBox">
+            <property name="title">
+             <string>Toon</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_8">
+             <item>
+              <widget class="QWidget" name="widget_7" native="true">
+               <layout class="QFormLayout" name="formLayout_2">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_shades">
+                  <property name="text">
+                   <string>shades</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="label_shininess">
+                  <property name="text">
+                   <string>shininess</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="label_heigth_2">
+                  <property name="text">
+                   <string>heigth</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QSpinBox" name="shadesSpinBox"/>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QDoubleSpinBox" name="depthSpinBox_2"/>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QSlider" name="shininesslSlider">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
              </item>
             </layout>
            </widget>
