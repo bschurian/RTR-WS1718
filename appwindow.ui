@@ -50,7 +50,7 @@
      <property name="focusPolicy">
       <enum>Qt::WheelFocus</enum>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_5">
+     <layout class="QVBoxLayout" name="verticalLayout_7">
       <item>
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
@@ -245,172 +245,199 @@
             <property name="title">
              <string>Dots Settings</string>
             </property>
-            <widget class="QWidget" name="widget_3" native="true">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>10</y>
-               <width>180</width>
-               <height>55</height>
-              </rect>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_2">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
-              <item row="0" column="0">
-               <widget class="QLabel" name="freqLabel">
-                <property name="text">
-                 <string>Frequency</string>
+            <layout class="QVBoxLayout" name="verticalLayout_5">
+             <item>
+              <widget class="QWidget" name="widget_3" native="true">
+               <layout class="QGridLayout" name="gridLayout_2">
+                <property name="leftMargin">
+                 <number>0</number>
                 </property>
-               </widget>
-              </item>
-              <item row="0" column="2">
-               <widget class="QSlider" name="freqSlider">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
+                <property name="topMargin">
+                 <number>0</number>
                 </property>
-                <property name="focusPolicy">
-                 <enum>Qt::NoFocus</enum>
+                <property name="rightMargin">
+                 <number>0</number>
                 </property>
-                <property name="minimum">
-                 <number>5</number>
+                <property name="bottomMargin">
+                 <number>0</number>
                 </property>
-                <property name="maximum">
-                 <number>50</number>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="freqLabel">
+                  <property name="text">
+                   <string>Frequency</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="2">
+                 <widget class="QSlider" name="freqSlider">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="focusPolicy">
+                   <enum>Qt::NoFocus</enum>
+                  </property>
+                  <property name="minimum">
+                   <number>5</number>
+                  </property>
+                  <property name="maximum">
+                   <number>50</number>
+                  </property>
+                  <property name="pageStep">
+                   <number>5</number>
+                  </property>
+                  <property name="value">
+                   <number>10</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QWidget" name="widget_4" native="true">
+               <layout class="QGridLayout" name="gridLayout_3">
+                <property name="leftMargin">
+                 <number>0</number>
                 </property>
-                <property name="pageStep">
-                 <number>5</number>
+                <property name="topMargin">
+                 <number>0</number>
                 </property>
-                <property name="value">
-                 <number>10</number>
+                <property name="rightMargin">
+                 <number>0</number>
                 </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+                <property name="bottomMargin">
+                 <number>0</number>
                 </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-            <widget class="QWidget" name="widget_4" native="true">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>50</y>
-               <width>180</width>
-               <height>55</height>
-              </rect>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_3">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
-              <item row="0" column="0">
-               <widget class="QLabel" name="radiusLabel">
-                <property name="text">
-                 <string>Radius</string>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="radiusLabel">
+                  <property name="text">
+                   <string>Radius</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="2">
+                 <widget class="QSlider" name="radiusSlider">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="focusPolicy">
+                   <enum>Qt::NoFocus</enum>
+                  </property>
+                  <property name="maximum">
+                   <number>100</number>
+                  </property>
+                  <property name="value">
+                   <number>25</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QWidget" name="widget_5" native="true">
+               <layout class="QGridLayout" name="gridLayout_4">
+                <property name="leftMargin">
+                 <number>0</number>
                 </property>
-               </widget>
-              </item>
-              <item row="0" column="2">
-               <widget class="QSlider" name="radiusSlider">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
+                <property name="topMargin">
+                 <number>0</number>
                 </property>
-                <property name="focusPolicy">
-                 <enum>Qt::NoFocus</enum>
+                <property name="rightMargin">
+                 <number>0</number>
                 </property>
-                <property name="maximum">
-                 <number>100</number>
+                <property name="bottomMargin">
+                 <number>0</number>
                 </property>
-                <property name="value">
-                 <number>25</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-            <widget class="QWidget" name="widget_5" native="true">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>90</y>
-               <width>180</width>
-               <height>55</height>
-              </rect>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_4">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
-              <item row="2" column="0">
-               <widget class="QLineEdit" name="dotEdit_b">
-                <property name="text">
-                 <string>0.7</string>
-                </property>
-                <property name="maxLength">
-                 <number>4</number>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLineEdit" name="dotEdit_g">
-                <property name="text">
-                 <string>0.6</string>
-                </property>
-                <property name="maxLength">
-                 <number>4</number>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLineEdit" name="dotEdit_r">
-                <property name="text">
-                 <string>0.5</string>
-                </property>
-                <property name="maxLength">
-                 <number>4</number>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
+                <item row="2" column="0">
+                 <widget class="QLineEdit" name="dotEdit_b">
+                  <property name="text">
+                   <string>0.7</string>
+                  </property>
+                  <property name="maxLength">
+                   <number>4</number>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLineEdit" name="dotEdit_g">
+                  <property name="text">
+                   <string>0.6</string>
+                  </property>
+                  <property name="maxLength">
+                   <number>4</number>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QLineEdit" name="dotEdit_r">
+                  <property name="text">
+                   <string>0.5</string>
+                  </property>
+                  <property name="maxLength">
+                   <number>4</number>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="waveBox">
+            <property name="title">
+             <string>Wave</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_6">
+             <item>
+              <layout class="QFormLayout" name="formLayout">
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_speed">
+                 <property name="text">
+                  <string>speed</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QDoubleSpinBox" name="speedSpinBox"/>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_depth">
+                 <property name="text">
+                  <string>depth</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QDoubleSpinBox" name="depthSpinBox"/>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_heigth">
+                 <property name="text">
+                  <string>heigth</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QDoubleSpinBox" name="heigthSpinBox"/>
+               </item>
+              </layout>
+             </item>
+            </layout>
            </widget>
           </item>
          </layout>

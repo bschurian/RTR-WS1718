@@ -10,4 +10,5 @@ void WaveMaterial::apply(unsigned int light_pass)
     // Wave
     prog_->setUniformValue("wave.depth", wave.depth);
     prog_->setUniformValue("wave.speed",  wave.speed);
+    prog_->setUniformValue("wave.heigth",  wave.heigth);
 }

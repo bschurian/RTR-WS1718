@@ -93,6 +93,19 @@ AppWindow::AppWindow(QWidget *parent) :
     {
        scene().setDotColor("b",value);
     });
+    connect(ui->depthSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double depth)
+    {
+       scene().setWaveDepth(depth);
+    });
+    connect(ui->speedSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double speed)
+    {
+       scene().setWaveSpeed(speed);
+    });
+    connect(ui->heigthSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double heigth)
+    {
+       scene().setWaveHeigth(heigth);
+    });
+
 }
 
 // called when the window is initially shown
@@ -113,6 +126,12 @@ void AppWindow::setDefaultUIValues() {
     ui->light0Slider->setValue(80);
     ui->modelComboBox->setCurrentText("Cube");
     ui->modelComboBox->setCurrentText("Duck");
+    ui->depthSpinBox->setValue(0.2);
+    ui->depthSpinBox->setValue(0.1);
+    ui->speedSpinBox->setValue(2.0f);
+    ui->speedSpinBox->setValue(1.0f);
+    ui->heigthSpinBox->setValue(2.0f);
+    ui->heigthSpinBox->setValue(0.07f);
 
 }
 

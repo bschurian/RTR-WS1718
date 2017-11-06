@@ -309,6 +309,23 @@ void Scene::setDotColor(QString type,QString value)
     }
 }
 
+void Scene::setWaveSpeed(float speed)
+{
+    for(auto mat : waveMaterials_)
+        mat.second->wave.speed = speed; update();
+}
+
+void Scene::setWaveDepth(float depth)
+{
+    for(auto mat : waveMaterials_)
+        mat.second->wave.depth = depth; update();
+}
+void Scene::setWaveHeigth(float heigth)
+{
+    for(auto mat : waveMaterials_)
+        mat.second->wave.heigth = heigth; update();
+}
+
 // pass key/mouse events on to navigator objects
 void Scene::keyPressEvent(QKeyEvent *event) {
 

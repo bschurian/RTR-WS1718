@@ -18,6 +18,7 @@ public:
     struct Wave {
         float depth = 0.1f;
         float speed = 1;
+        float heigth = 0.07f;
     } wave;
 
 };
