@@ -315,7 +315,11 @@ void Scene::setToonShininess(float s)
 {
     for(auto mat : cartoonMaterials_)
         mat.second->cel.shininess = s; update();
-        qInfo(to_string(s).c_str());
+}
+void Scene::setToonOutlineStroke(float stroke)
+{
+    for(auto mat : cartoonMaterials_)
+        mat.second->cel.outlineStroke = stroke; update();
 }
 
 void Scene::setDotColor(QString type,QString value)

@@ -57,6 +57,7 @@ public slots:
     void setDotFrequency(int value);
     void setToonShades(int s);
     void setToonShininess(float s);
+    void setToonOutlineStroke(float s);
     void setWaveSpeed(float speed);
     void setWaveDepth(float depth);
     void setWaveHeigth(float heigth);

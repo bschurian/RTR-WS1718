@@ -95,6 +95,10 @@ AppWindow::AppWindow(QWidget *parent) :
     {
        scene().setToonShininess(shininess);
     });
+    connect(ui->outlineSlider, &QSlider::valueChanged, [this](int value)
+    {
+        scene().setToonOutlineStroke(float(value)/100); // slider goes from 0...1 but val is 0 .. 100
+    });
     connect(ui->dotEdit_r,&QLineEdit::textChanged, [this](QString value)
     {
        scene().setDotColor("r",value);
@@ -146,12 +150,19 @@ void AppWindow::setDefaultUIValues() {
     ui->shadesSpinBox->setValue(3);
     ui->shininesslSlider->setValue(70);
     ui->shininesslSlider->setValue(80);
+    ui->outlineSlider->setValue(0.1);
+    ui->outlineSlider->setValue(0.2);
     ui->depthSpinBox->setValue(0.2);
     ui->depthSpinBox->setValue(0.1);
     ui->speedSpinBox->setValue(2.0f);
     ui->speedSpinBox->setValue(1.0f);
     ui->heigthSpinBox->setValue(2.0f);
     ui->heigthSpinBox->setValue(0.07f);
+
+    //min and max for outl with a bit of a sefety net on min
+    ui->outlineSlider->setMinimum(-10);
+    ui->outlineSlider->setMaximum(100);
+
 
 }
 

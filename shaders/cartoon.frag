@@ -20,6 +20,7 @@ struct CelMaterial {
     vec3 k_diffuse;
     vec3 k_specular;
     float shininess;
+    float outlineStroke;
 
 };
 uniform CelMaterial cel;
@@ -31,6 +32,8 @@ struct PointLight {
     int  pass;
 };
 uniform PointLight light;
+
+uniform float outlineAngle;
 
 uniform mat4 viewMatrix;
 
@@ -52,7 +55,7 @@ vec3 mycartoon(vec3 n, vec3 v, vec3 l) {
 
     // surface back-facing to light?
     if(ndotl<=0.0)
-        return 0.5;
+        return 0;
     else
         ndotl = max(ndotl, 0.0);
 
@@ -63,12 +66,6 @@ vec3 mycartoon(vec3 n, vec3 v, vec3 l) {
         return 1;
     }
 
-    /*if (normal_EC < mix(unlitOutlineThickness, litOutlineThickness,
-                   max(0.0, dot(normalDirection, lightDirection))))
-                {
-                   fragmentColor =
-                      vec3(_LightColor0) * vec3(_OutlineColor);
-                }*/
 
     // diffuse term
     vec3 diffuse =  cel.k_diffuse * light.intensity * shadeIntensity;
@@ -102,5 +99,8 @@ void main() {
 
     // set output
     outColor = vec4(final_color, 1.0);
+    if(dot(normalize(normal_EC), normalize(viewdir_EC.xyz)) <  cel.outlineStroke){
+        outColor = vec4(1, 0 ,0 ,1);
+    }
 }
 

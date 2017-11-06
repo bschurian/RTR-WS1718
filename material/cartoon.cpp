@@ -24,7 +24,8 @@ void CartoonMaterial::apply(unsigned int light_pass)
     prog_->setUniformValue("cel.shininess",  cel.shininess);
 
     // Cartoon
-    prog_->setUniformValue("cel.shades", cel.shades);
+    prog_->setUniformValue("cel.shades", cel.shades);    
+    prog_->setUniformValue("cel.outlineStroke", cel.outlineStroke);
 
 }
 

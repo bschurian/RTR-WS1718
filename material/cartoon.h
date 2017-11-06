@@ -30,6 +30,7 @@ public:
         QVector3D k_specular = QVector3D(0.80f,0.80f,0.80f); // white-ish
         int shades  = 2;
         float     shininess  = 80; // middle-ish
+        float outlineStroke = 0.0f;
     } cel;
 
 };
