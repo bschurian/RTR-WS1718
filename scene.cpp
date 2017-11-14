@@ -88,15 +88,15 @@ void Scene::makeNodes()
     waveMaterials_["Procedural"] = procedural;
 
     // which material to use as default for all objects?
-    auto std = toon;
+    auto std = procedural;
 
     // load meshes from .obj files and assign shader programs to them
-    meshes_["Duck"]    = std::make_shared<Mesh>(":/models/duck/duck.obj", std);
-    meshes_["Teapot"]  = std::make_shared<Mesh>(":/models/teapot/teapot.obj", std);
-    meshes_["Bunny"]  = std::make_shared<Mesh>(":/models/stanford_bunny/bunny.obj", phong);
+    meshes_["Duck"]    = std::make_shared<Mesh>(":/models/duck/duck.obj", procedural);
+    meshes_["Teapot"]  = std::make_shared<Mesh>(":/models/teapot/teapot.obj", phong);
+    meshes_["Bunny"]  = std::make_shared<Mesh>(":/models/stanford_bunny/bunny.obj", toon);
 
     // add meshes of some procedural geometry objects (not loaded from OBJ files)
-    meshes_["Cube"]   = std::make_shared<Mesh>(make_shared<geom::Cube>(), std);
+    meshes_["Cube"]   = std::make_shared<Mesh>(make_shared<geom::Cube>(), dots);
 
     // pack each mesh into a scene node, along with a transform that scales
     // it to standard size [1,1,1]

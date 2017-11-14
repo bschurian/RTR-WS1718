@@ -8,22 +8,18 @@
 // output - transformed to eye coordinates (EC)
 in vec4 position_EC;
 in vec3 normal_EC;
-//in vec2 texCoords_frag;
 
 // output: fragment/pixel color
 out vec4 outColor;
 
-struct CelMaterial {
-
-    int shades;
+struct PhongMaterial {
     vec3 k_ambient;
     vec3 k_diffuse;
     vec3 k_specular;
     float shininess;
-    float outlineStroke;
 
 };
-uniform CelMaterial cel;
+uniform PhongMaterial phong;
 uniform vec3 ambientLightIntensity;
 
 struct PointLight {
@@ -33,17 +29,13 @@ struct PointLight {
 };
 uniform PointLight light;
 
-uniform float outlineAngle;
-
 uniform mat4 viewMatrix;
-
 
 /*
  *  Calculate surface color based on Phong illumination model.
- *  from http://www.konlabs.com/articles_data/cel_shading/
  */
 
-vec3 mycartoon(vec3 n, vec3 v, vec3 l) {
+vec3 myphong(vec3 n, vec3 v, vec3 l) {
 
     // cosine of angle between light and surface normal.
     float ndotl = dot(n,l);
@@ -51,21 +43,16 @@ vec3 mycartoon(vec3 n, vec3 v, vec3 l) {
     // ambient / emissive part
     vec3 ambient = vec3(0,0,0);
     if(light.pass == 0) // only add ambient in first light pass
-        ambient = cel.k_ambient * ambientLightIntensity;
+        ambient = phong.k_ambient * ambientLightIntensity;
 
     // surface back-facing to light?
     if(ndotl<=0.0)
-        return 0;
+        return ambient;
     else
         ndotl = max(ndotl, 0.0);
 
-    //number of shades
-    float shadeIntensity = ceil(ndotl * cel.shades)/(cel.shades);
-
-
-
     // diffuse term
-    vec3 diffuse =  cel.k_diffuse * light.intensity * shadeIntensity;
+    vec3 diffuse =  phong.k_diffuse * light.intensity * ndotl;
 
     // reflected light direction = perfect reflection direction
     vec3 r = reflect(-l,n);
@@ -74,7 +61,7 @@ vec3 mycartoon(vec3 n, vec3 v, vec3 l) {
     float rdotv = max( dot(r,v), 0.0);
 
     // specular contribution + gloss map
-    vec3 specular = cel.k_specular * light.intensity * round(rdotv * (cel.shininess/100));
+    vec3 specular = phong.k_specular * light.intensity * pow(rdotv, phong.shininess);
 
     // return sum of all contributions
     return ambient + diffuse + specular;
@@ -89,15 +76,12 @@ void main() {
     vec3 viewdir_EC  = (vec4(0,0,0,1) - position_EC).xyz;
 
     // calculate color using phong, all vectors in eye coordinates
-    vec3 final_color = mycartoon(normalize(normal_EC),
+    vec3 final_color = myphong(normalize(normal_EC),
                                normalize(viewdir_EC),
                                normalize(lightdir_EC));
 
-
     // set output
-    outColor = vec4(final_color, 1.0);
-    if(dot(normalize(normal_EC), normalize(viewdir_EC.xyz)) <  cel.outlineStroke){
-        outColor = vec4(1, 0 ,0 ,1);
-    }
-}
+    // outColor = vec4(final_color, 1.0);
+    outColor = vec4(1,0,0, 1.0);
 
+}
