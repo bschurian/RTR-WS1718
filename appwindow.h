@@ -5,7 +5,6 @@
 
 #include "scene.h"
 
-
 namespace Ui {
 class AppWindow;
 }
@@ -14,7 +13,7 @@ class AppWindow;
  *   RTR demo App, AppWindow
  *   Author: Hartmut Schirmacher
  *
- *   The AppWindow wraps the GUI of the application that has been created
+ *   The AppWindow holds the GUI of the application that has been created
  *   and can be edited in Qt UI designer.
  *
  *   It consists of an OpenGL Widget for rendering the OpenGL Scene,
@@ -40,15 +39,13 @@ public slots:
 
     /* show buttons etc, and a border around the OpenGL widget */
     void showUI();
-
     /* hide all buttons etc, and remove border around the OpenGL widget */
     void hideUI();
 
     /* process app-wide key events and trigger respective actions in UI or in the scene */
     void keyPressEvent(QKeyEvent *event) override;
 
-    /* set default values for the UI widgets.
-     * must only be called AFTER constructor, after scene has been instantiated. */
+    /* set default values for the UI widgets. must only be called AFTER constructor */
     void setDefaultUIValues();
 
 protected:

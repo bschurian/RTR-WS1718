@@ -25,15 +25,9 @@ void RotateY::keyPressEvent(QKeyEvent *event)
             rotate(+rotation_speed_);
             break;
         case Qt::Key_Up:
-            elevate(-rotation_speed_);
-            break;
-        case Qt::Key_Down:
-            elevate(+rotation_speed_);
-            break;
-        case Qt::Key_Minus:
             setDistance(distance_to_center_-zoom_speed_);
             break;
-        case Qt::Key_Plus:
+        case Qt::Key_Down:
             setDistance(distance_to_center_+zoom_speed_);
             break;
         default:
@@ -76,17 +70,12 @@ RotateY& RotateY::rotate(float degrees)
     return *this;
 }
 
-RotateY& RotateY::elevate(float degrees)
-{
-    elevation_angle_ = elevation_angle_ + degrees;
-    updateTransformation_();
-    return *this;
-}
-
 // calculate camera's tranformation matrix from distance and rotation angle
 void RotateY::updateTransformation_()
 {
     QMatrix4x4 mat;
+
+    // qDebug() << "navigator: dist=" << distance_to_center_ << " angle=" << rotation_angle_;
 
     // third, rotate around Y axis
     mat.rotate(rotation_angle_, QVector3D(0,1,0));

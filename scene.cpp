@@ -4,7 +4,8 @@
 #include <assert.h> // assert()
 #include <random>   // random number generation
 
-#include "geometry/cube.h" // geom::Cube
+#include "geometry/cube.h"       // geom::Cube
+#include "geometry/parametric.h" // geom::Sphere
 
 #include <QtMath>
 #include <QMessageBox>
@@ -43,9 +44,14 @@ Scene::Scene(QWidget* parent, QOpenGLContext *context) :
     // from the nodes, construct a hierarchical scene (adding more nodes)
     makeScene();
 
+    // select initial model and shader
+    setSceneNode("Sphere");
+    setShader("Phong");
+
     // initialize navigation controllers
     cameraNavigator_ = std::make_unique<RotateY>(nodes_["Camera"], nullptr, nullptr);
     cameraNavigator_->setDistance(3.0);
+    lightNavigator_ = std::make_unique<PositionNavigator>(nodes_["Light0"], nodes_["World"], nodes_["Camera"]);
 
     // make sure we redraw when the timer hits
     connect(&timer_, SIGNAL(timeout()), this, SLOT(update()) );
@@ -55,55 +61,69 @@ Scene::Scene(QWidget* parent, QOpenGLContext *context) :
 void Scene::makeNodes()
 {
     // load shader source files and compile them into OpenGL program objects
-    auto phong_prog = createProgram(":/shaders/phong.vert", ":/shaders/phong.frag");
-    auto cart_prog = createProgram(":/shaders/cartoon.vert", ":/shaders/cartoon.frag");
-    auto dots_prog = createProgram(":/shaders/dots.vert", ":/shaders/dots.frag");
-    auto proc_prog = createProgram(":/shaders/procedural.vert", ":/shaders/procedural.frag");
+    auto planet_prog = createProgram(":/shaders/planet_with_bumps.vert", ":/shaders/planet_with_bumps.frag");
+    planetMaterial_ = std::make_shared<PlanetMaterial>(planet_prog);
+    planetMaterial_->phong.shininess = 10;
 
-    // Phong materials
-    auto phong = std::make_shared<PhongMaterial>(phong_prog);
-    phongMaterials_["Phong"] = phong;
-    phong->phong.k_diffuse = QVector3D(0.8f,0.1f,0.1f);
-    phong->phong.k_ambient = phong->phong.k_diffuse * 0.3f;
-    phong->phong.shininess = 80;
+    // program (with additional geometry shader) to visualize wireframe
+    auto wire_prog = createProgram(":/shaders/wireframe.vert",
+                                   ":/shaders/wireframe.frag",
+                                   ":/shaders/wireframe.geom");
+    wireframeMaterial_ = std::make_shared<WireframeMaterial>(wire_prog);
 
-    auto toon = std::make_shared<CartoonMaterial>(cart_prog);
-    cartoonMaterials_["Toon"] = toon;
-    toon->cel.k_diffuse = QVector3D(0.1f,0.1f,0.8f);
-    toon->cel.k_ambient = toon->cel.k_diffuse * 0.3f;
-    toon->cel.shininess = 80;
-    toon->cel.shades = 3;
+    // program (with additional geometry shader) to visualize normal/tangent vectors
+    auto vectors_prog = createProgram(":/shaders/vectors.vert",
+                                      ":/shaders/vectors.frag",
+                                      ":/shaders/vectors.geom");
+    vectorsMaterial_ = std::make_shared<VectorsMaterial>(vectors_prog);
+    vectorsMaterial_->vectorToShow  = 0;
 
-    auto dots = std::make_shared<DotsMaterial>(dots_prog);
-    dotsMaterials_["Dots"] = dots;
-    dots->dots.k_diffuse = QVector3D(0.1f,0.8f,0.1f);
-    dots->dots.k_ambient = dots->dots.k_diffuse * 0.3f;
-    dots->dots.shininess = 80;
-    dots->dots.shades = 3;
-    dots->dots.frequency = 10.0;
-    dots->dots.radius = 0.25;
-    dots->dots.dotcolor = QVector3D(0.5f,0.6f,0.7f);
+    // load textures
+    auto day    = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_day.jpg").mirrored());
+    auto night  = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_at_night_2048.jpg").mirrored());
+    auto gloss  = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_bathymetry_2048.jpg").mirrored());
+    auto clouds = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_clouds_2048.jpg").mirrored());
+    auto disp   = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_topography_2048.jpg").mirrored());
+    auto bumps  = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_topography_2048_NRM.png").mirrored());
 
-    auto procedural = std::make_shared<WaveMaterial>(proc_prog);
-    waveMaterials_["Procedural"] = procedural;
+    // tex parameters
+    clouds->setWrapMode(QOpenGLTexture::DirectionS, QOpenGLTexture::Repeat);
+    clouds->setWrapMode(QOpenGLTexture::DirectionT, QOpenGLTexture::Repeat);
 
-    // which material to use as default for all objects?
-    auto std = procedural;
+    // assign textures to material
+    planetMaterial_->planet.dayTexture = day;
+    planetMaterial_->planet.nightTexture = night;
+    planetMaterial_->planet.glossTexture = gloss;
+    planetMaterial_->planet.cloudsTexture = clouds;
+    planetMaterial_->bump.tex = bumps;
+    planetMaterial_->displacement.tex = disp;
 
     // load meshes from .obj files and assign shader programs to them
-    meshes_["Duck"]    = std::make_shared<Mesh>(":/models/duck/duck.obj", procedural);
-    meshes_["Teapot"]  = std::make_shared<Mesh>(":/models/teapot/teapot.obj", phong);
-    meshes_["Bunny"]  = std::make_shared<Mesh>(":/models/stanford_bunny/bunny.obj", toon);
+    auto std = planetMaterial_;
+    meshes_["Duck"]    = std::make_shared<Mesh>(":/models/duck/duck.obj", std);
+    meshes_["Teapot"]  = std::make_shared<Mesh>(":/models/teapot/teapot.obj", std);
+    meshes_["Dwarf"]   = std::make_shared<Mesh>(":/models/dwarf/Dwarf_2_Low.obj", std);
 
     // add meshes of some procedural geometry objects (not loaded from OBJ files)
-    meshes_["Cube"]   = std::make_shared<Mesh>(make_shared<geom::Cube>(), dots);
+    meshes_["Cube"]   = std::make_shared<Mesh>(make_shared<geom::Cube>(), std);
+    meshes_["Sphere"] = std::make_shared<Mesh>(make_shared<geom::Planet>(80,80), std);
+    meshes_["Torus"]  = std::make_shared<Mesh>(make_shared<geom::Torus>(4, 2, 120,40), std);
+    meshes_["Rect"]   = std::make_shared<Mesh>(make_shared<geom::Rect>(20,20), std);
 
     // pack each mesh into a scene node, along with a transform that scales
     // it to standard size [1,1,1]
+    nodes_["Sphere"]  = createNode(meshes_["Sphere"], true);
+    nodes_["Torus"]   = createNode(meshes_["Torus"], true);
+    nodes_["Rect"]    = createNode(meshes_["Rect"], true);
     nodes_["Cube"]    = createNode(meshes_["Cube"], true);
-    nodes_["Bunny"]    = createNode(meshes_["Bunny"], true);
     nodes_["Duck"]    = createNode(meshes_["Duck"], true);
     nodes_["Teapot"]  = createNode(meshes_["Teapot"], true);
+    nodes_["Dwarf"]   = createNode(meshes_["Dwarf"], true);
+
+    // rotate some models
+    nodes_["Sphere"]->transformation.rotate(-90, QVector3D(1,0,0));
+    nodes_["Torus"]->transformation.rotate(-60, QVector3D(1,0,0));
+    nodes_["Rect"]->transformation.rotate(30, QVector3D(1,0,0));
 
 }
 
@@ -127,11 +147,116 @@ void Scene::makeScene()
 
     // light attached to camera, placed right above camera
     nodes_["Camera"]->children.push_back(nodes_["Light0"]);
-    nodes_["Light0"]->transformation.translate(QVector3D(0, 1, 0));
+    nodes_["Light0"]->transformation.translate(QVector3D(10, 0, 0));
 
 }
 
+void Scene::setShader(QString txt)
+{
+    if(txt == "None") {
+        material_ = nullptr;
+    }
+    else if(txt == "Phong") {
+        material_ = planetMaterial_;
+        planetMaterial_->planet.debug_texcoords = false;
+        planetMaterial_->planet.debugWaterLand = false;
+        planetMaterial_->planet.useDayTexture = false;
+        planetMaterial_->planet.useNightTexture = false;
+        planetMaterial_->planet.useGlossTexture = false;
+        planetMaterial_->planet.useCloudsTexture = false;
+    }
+    else if(txt == "Debug Tex Coords") {
+        material_ = planetMaterial_;
+        planetMaterial_->planet.debug_texcoords = true;
+        planetMaterial_->planet.debugWaterLand = false;
+        planetMaterial_->planet.useDayTexture = false;
+        planetMaterial_->planet.useNightTexture = false;
+        planetMaterial_->planet.useGlossTexture = false;
+        planetMaterial_->planet.useCloudsTexture = false;
+    }
+    else if(txt == "Debug Day/Night") {
+        material_ = planetMaterial_;
+        planetMaterial_->planet.debug_texcoords = false;
+        planetMaterial_->planet.debug = true;
+        planetMaterial_->planet.debugWaterLand = false;
+        planetMaterial_->planet.useDayTexture = false;
+        planetMaterial_->planet.useNightTexture = false;
+        planetMaterial_->planet.useGlossTexture = false;
+        planetMaterial_->planet.useCloudsTexture = false;
+    }
+    else if(txt == "Day Texture") {
+        material_ = planetMaterial_;
+        planetMaterial_->planet.debug_texcoords = false;
+        planetMaterial_->planet.debug = false;
+        planetMaterial_->planet.debugWaterLand = false;
+        planetMaterial_->planet.useDayTexture = true;
+        planetMaterial_->planet.useNightTexture = false;
+        planetMaterial_->planet.useGlossTexture = false;
+        planetMaterial_->planet.useCloudsTexture = false;
+    }
+    else if(txt == "Night Texture") {
+        material_ = planetMaterial_;
+        planetMaterial_->planet.debug_texcoords = false;
+        planetMaterial_->planet.debug = false;
+        planetMaterial_->planet.debugWaterLand = false;
+        planetMaterial_->planet.useDayTexture = false;
+        planetMaterial_->planet.useNightTexture = true;
+        planetMaterial_->planet.useGlossTexture = false;
+        planetMaterial_->planet.useCloudsTexture = false;
+    }
+    else if(txt == "Day+Night Texture") {
+        material_ = planetMaterial_;
+        planetMaterial_->planet.debug_texcoords = false;
+        planetMaterial_->planet.debug = false;
+        planetMaterial_->planet.debugWaterLand = false;
+        planetMaterial_->planet.useDayTexture = true;
+        planetMaterial_->planet.useNightTexture = true;
+        planetMaterial_->planet.useGlossTexture = false;
+        planetMaterial_->planet.useCloudsTexture = false;
+    }
+    else if(txt == "Debug Gloss") {
+        material_ = planetMaterial_;
+        planetMaterial_->planet.debug_texcoords = false;
+        planetMaterial_->planet.debug = false;
+        planetMaterial_->planet.debugWaterLand = true;
+        planetMaterial_->planet.useDayTexture = false;
+        planetMaterial_->planet.useNightTexture = false;
+        planetMaterial_->planet.useGlossTexture = true;
+        planetMaterial_->planet.useCloudsTexture = false;
+    }
+    else if(txt == "Phong+Gloss") {
+        material_ = planetMaterial_;
+        planetMaterial_->planet.debug_texcoords = false;
+        planetMaterial_->planet.debug = false;
+        planetMaterial_->planet.debugWaterLand = false;
+        planetMaterial_->planet.useDayTexture = false;
+        planetMaterial_->planet.useNightTexture = false;
+        planetMaterial_->planet.useGlossTexture = true;
+        planetMaterial_->planet.useCloudsTexture = false;
+    }
+    else if(txt == "Day+Night+Gloss") {
+        material_ = planetMaterial_;
+        planetMaterial_->planet.debug_texcoords = false;
+        planetMaterial_->planet.debug = false;
+        planetMaterial_->planet.debugWaterLand = false;
+        planetMaterial_->planet.useDayTexture = true;
+        planetMaterial_->planet.useNightTexture = true;
+        planetMaterial_->planet.useGlossTexture = true;
+        planetMaterial_->planet.useCloudsTexture = false;
+    }
+    else if(txt == "+Clouds") {
+        material_ = planetMaterial_;
+        planetMaterial_->planet.debug_texcoords = false;
+        planetMaterial_->planet.debug = false;
+        planetMaterial_->planet.debugWaterLand = false;
+        planetMaterial_->planet.useDayTexture = true;
+        planetMaterial_->planet.useNightTexture = true;
+        planetMaterial_->planet.useGlossTexture = true;
+        planetMaterial_->planet.useCloudsTexture = true;
+    }
 
+    update();
+}
 
 // this method is called implicitly by the Qt framework when a redraw is required.
 void Scene::draw()
@@ -148,14 +273,7 @@ void Scene::draw()
 
     // set time uniform in animated shader(s)
     float t = millisec_since_first_draw.count() / 1000.0f;
-    for(auto mat : phongMaterials_)
-        mat.second->time = t;
-    for(auto mat : cartoonMaterials_)
-        mat.second->time = t;
-    for(auto mat : dotsMaterials_)
-        mat.second->time = t;
-    for(auto mat : waveMaterials_)
-        mat.second->time = t;
+    planetMaterial_->time = t; // TODO not consistent with rtrApp
 
     draw_scene_();
 }
@@ -171,34 +289,60 @@ void Scene::draw_scene_()
     auto camToWorld = nodes_["World"]->toParentTransform(nodes_["Camera"]);
     auto viewMatrix = camToWorld.inverted();
     Camera camera(viewMatrix, projectionMatrix);
+    // qDebug() << viewMatrix;
 
-    // clear buffer
+    // clear background, set OpenGL state
     glClearColor(bgcolor_[0], bgcolor_[1], bgcolor_[2], 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // first light pass: standard depth test, no blending
-    glDepthFunc(GL_LESS);
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_BLEND);
     glDisable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+
+    // draw using currently selected material, if one is selected at all
+    if(material_) {
+        glDepthFunc(GL_LEQUAL);
+        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_BLEND);
+        replaceMaterialAndDrawScene(camera, material_);
+    }
+
+    // show wireframe in addition?
+    if(showWireframe) {
+        glDepthFunc(GL_LEQUAL);
+        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_BLEND);
+        replaceMaterialAndDrawScene(camera, wireframeMaterial_);
+    }
+
+    // show vectors in addition?
+    if(vectorsMaterial_->vectorToShow != 0) {
+        glDepthFunc(GL_LEQUAL);
+        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_BLEND);
+        replaceMaterialAndDrawScene(camera, vectorsMaterial_);
+    }
+
+}
+
+void Scene::replaceMaterialAndDrawScene(const Camera& camera, shared_ptr<Material> material)
+{
+    // replace material in all meshes, if necessary
+    if(material != meshes_.begin()->second->material()) {
+        // qDebug() << "replacing material";
+        for (auto& element : meshes_) {
+            auto mesh = element.second;
+            mesh->replaceMaterial(material);
+        }
+    }
 
     // draw one pass for each light
+    // TODO: wireframe and vector materials always only require one pass
     for(unsigned int i=0; i<lightNodes_.size(); i++) {
+
+        // qDebug() << "drawing light pass" << i;
 
         // determine current light position and set it in all materials
         QMatrix4x4 lightToWorld = nodes_["World"]->toParentTransform(lightNodes_[i]);
-        for(auto mat : phongMaterials_) {
-            auto phong = mat.second; // mat is of type (key, value)
-            phong->lights[i].position_WC = lightToWorld * QVector3D(0,0,0);
-        }
-        for(auto mat : cartoonMaterials_) {
-            auto phong = mat.second; // mat is of type (key, value)
-            phong->lights[i].position_WC = lightToWorld * QVector3D(0,0,0);
-        }
-        for(auto mat : dotsMaterials_) {
-            auto phong = mat.second; // mat is of type (key, value)
-            phong->lights[i].position_WC = lightToWorld * QVector3D(0,0,0);
-        }
+        planetMaterial_->lights[i].position_WC = lightToWorld * QVector3D(0,0,0);
 
         // draw light pass i
         nodes_["World"]->draw(camera, i);
@@ -208,6 +352,7 @@ void Scene::draw_scene_()
         glBlendFunc(GL_ONE,GL_ONE);
         glDepthFunc(GL_EQUAL);
     }
+
 }
 
 // helper to load shaders and create programs
@@ -252,6 +397,8 @@ void Scene::toggleAnimation(bool flag)
     } else {
         timer_.stop();
     }
+    planetMaterial_->planet.animateClouds = flag;
+
 }
 
 void Scene::setSceneNode(QString node)
@@ -261,123 +408,19 @@ void Scene::setSceneNode(QString node)
 
     nodes_["Scene"]->children.clear();
     nodes_["Scene"]->children.push_back(n);
-    update();
-}
-
-void Scene::setMaterialNode(QString mat,QString node)
-{
-    auto n = nodes_[node];
-
-    // dotMaterial und toonMaterial
-    if(mat == "Dots"){
-        auto material = phongMaterials_[mat];
-        n->mesh->replaceMaterial(material);
-    }else if(mat == "Toon"){
-        auto material = phongMaterials_[mat];
-        n->mesh->replaceMaterial(material);
-    }else{
-        auto material = phongMaterials_[mat];
-        n->mesh->replaceMaterial(material);
-    }
-
-
 
     update();
-}
-
-// change background color
-void Scene::setBackgroundColor(QVector3D rgb) {
-    bgcolor_ = rgb; update();
-}
-
-// methods to change common material parameters
-void Scene::setLightIntensity(size_t i, float v)
-{
-    if(i>=lightNodes_.size())
-        return;
-
-    for(auto mat : phongMaterials_)
-        mat.second->lights[i].intensity = v; update();
-    for(auto mat : cartoonMaterials_)
-        mat.second->lights[i].intensity = v; update();
-    for(auto mat : dotsMaterials_)
-        mat.second->lights[i].intensity = v; update();
-}
-
-void Scene::setToonShades(int shades)
-{
-    for(auto mat : cartoonMaterials_)
-        mat.second->cel.shades = shades; update();
-
-}
-
-void Scene::setToonShininess(float s)
-{
-    for(auto mat : cartoonMaterials_)
-        mat.second->cel.shininess = s; update();
-}
-void Scene::setToonOutlineStroke(float stroke)
-{
-    for(auto mat : cartoonMaterials_)
-        mat.second->cel.outlineStroke = stroke; update();
-}
-
-void Scene::setDotColor(QString type,QString value)
-{
-
-    if(type=="r"){
-        float y = dotsMaterials_["Dots"]->dots.dotcolor.y();
-        float z = dotsMaterials_["Dots"]->dots.dotcolor.z();
-        QVector3D newdc = QVector3D(value.toFloat(),y,z);
-        dotsMaterials_["Dots"]->dots.dotcolor=newdc;
-    }
-    else if(type == "g"){
-        float x = dotsMaterials_["Dots"]->dots.dotcolor.x();
-        float z = dotsMaterials_["Dots"]->dots.dotcolor.z();
-        QVector3D dc = dotsMaterials_["Dots"]->dots.dotcolor;
-        QVector3D newdc = QVector3D(x,value.toFloat(),z);
-        dotsMaterials_["Dots"]->dots.dotcolor=newdc;
-    }
-    else{
-        float x = dotsMaterials_["Dots"]->dots.dotcolor.x();
-        float y = dotsMaterials_["Dots"]->dots.dotcolor.y();
-        QVector3D newdc = QVector3D(x,y,value.toFloat());
-        dotsMaterials_["Dots"]->dots.dotcolor=newdc;
-    }
-    update();
-}
-
-void Scene::setDotFrequency(int value){
-    dotsMaterials_["Dots"]->dots.frequency=float(value);
-    update();
-}
-
-void Scene::setDotRadius(float value){
-    dotsMaterials_["Dots"]->dots.radius=value;
-    update();
-}
-
-void Scene::setWaveSpeed(float speed)
-{
-    for(auto mat : waveMaterials_)
-        mat.second->wave.speed = speed; update();
-}
-
-void Scene::setWaveDepth(float depth)
-{
-    for(auto mat : waveMaterials_)
-        mat.second->wave.depth = depth; update();
-}
-void Scene::setWaveHeigth(float heigth)
-{
-    for(auto mat : waveMaterials_)
-        mat.second->wave.heigth = heigth; update();
 }
 
 // pass key/mouse events on to navigator objects
 void Scene::keyPressEvent(QKeyEvent *event) {
 
-    cameraNavigator_->keyPressEvent(event);
+    // dispatch: when Modifier is pressed, navigate light, else camera
+    if(event->modifiers() & Qt::AltModifier)
+        lightNavigator_->keyPressEvent(event);
+    else
+        cameraNavigator_->keyPressEvent(event);
+
     update();
 
 }

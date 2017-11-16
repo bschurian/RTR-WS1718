@@ -48,9 +48,11 @@ void PositionNavigator::keyPressEvent(QKeyEvent *event)
     node_->transformation.translate(translation_mc.toVector3D());
 
     // debugging for positioning
+#if 0
     QMatrix4x4 nodeToWorld = world_->toParentTransform(node_);
     QVector4D pos = nodeToWorld * QVector4D(0,0,0,1);
     qDebug() << pos;
+#endif
 
 }
 

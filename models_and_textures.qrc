@@ -2,7 +2,14 @@
     <qresource prefix="/">
         <file>models/duck/duck.obj</file>
         <file>models/teapot/teapot.obj</file>
-        <file>models/stanford_bunny/bunny.obj</file>
         <file>models/goblin.obj</file>
+        <file>models/trefoil.obj</file>
+        <file>models/dwarf/Dwarf_2_Low.obj</file>
+        <file>textures/earth_at_night_2048.jpg</file>
+        <file>textures/earth_bathymetry_2048.jpg</file>
+        <file>textures/earth_clouds_2048.jpg</file>
+        <file>textures/earth_day.jpg</file>
+        <file>textures/earth_topography_2048_NRM.png</file>
+        <file>textures/earth_topography_2048.jpg</file>
     </qresource>
 </RCC>

@@ -9,8 +9,6 @@
 #include <QApplication>
 #include <QKeyEvent>
 #include <QDesktopWidget>
-#include <QDialog>
-#include <QVBoxLayout>
 
 #include "appwindow.h"
 #include "ui_appwindow.h"
@@ -46,123 +44,70 @@ AppWindow::AppWindow(QWidget *parent) :
     // when last window closes, quit
     connect(qApp, &QGuiApplication::lastWindowClosed, []{ qApp->quit(); });
 
-    // mini controllers (lambda expressions) for UI functionality
-    connect(ui->blackBgRadioButton, &QRadioButton::clicked, [this](bool)
-    {
-        scene().setBackgroundColor(QVector3D(0,0,0));
-    });
+    // combo box to change the model
+    connect(ui->modelComboBox, &QComboBox::currentTextChanged,
+            [this](const QString& txt) { scene().setSceneNode(txt);
+    } );
 
-    connect(ui->greyBgRadioButton, &QRadioButton::clicked, [this](bool)
-    {
-        scene().setBackgroundColor(QVector3D(0.4f,0.4f,0.4f));
-    });
+    // combo box to change the shader
+    connect(ui->shaderComboBox, &QComboBox::currentTextChanged, [this](const QString& txt) {
+        scene().setShader(txt);
+        if(txt == "+Clouds")
+            ui->animationCheckbox->setVisible(true);
+        else
+            ui->animationCheckbox->setVisible(false);
 
-    connect(ui->whiteBgRadioButton, &QRadioButton::clicked, [this](bool)
-    {
-        scene().setBackgroundColor(QVector3D(1,1,1));
-    });
+    } );
 
-    connect(ui->modelComboBox, &QComboBox::currentTextChanged, [this](QString value)
-    {
+    // main shader parameters
+    connect(ui->blackBgRadioButton, &QRadioButton::clicked,
+            [this](bool) { scene().setBackgroundColor(QVector3D(0,0,0)); } );
+    connect(ui->greyBgRadioButton, &QRadioButton::clicked,
+            [this](bool) { scene().setBackgroundColor(QVector3D(0.4f,0.4f,0.4f)); } );
+    connect(ui->whiteBgRadioButton, &QRadioButton::clicked,
+            [this](bool) { scene().setBackgroundColor(QVector3D(1,1,1)); } );
+    connect(ui->sunlightSlider, &QSlider::valueChanged,
+            [this](int value) { scene().setLightIntensity(0, float(value)/100.0); } );
+    connect(ui->nightLightSlider, &QSlider::valueChanged,
+            [this](int value) { scene().setNightScale(float(value)/100.0); } );
+    connect(ui->blendExpSlider, &QSlider::valueChanged,
+            [this](int value) { scene().setBlendExponent(float(value)/100.0); } );
+    connect(ui->animationCheckbox, &QCheckBox::stateChanged,
+            [this](bool onOrOff) { scene().toggleAnimation(onOrOff); } );
+    connect(ui->bumpMapCheckbox, &QCheckBox::stateChanged,
+            [this](bool onOrOff) { scene().toggleBumpMapping(onOrOff); } );
+    connect(ui->dispMapCheckBox, &QCheckBox::stateChanged,
+            [this](bool onOrOff) { scene().toggleDisplacementMapping(onOrOff); } );
+    connect(ui->bumpMapSlider, &QSlider::valueChanged,
+            [this](int value) { scene().setBumpMapScale(float(value)/100.0); } );
+    connect(ui->dispMapSlider, &QSlider::valueChanged,
+            [this](int value) { scene().setDisplacementMapScale(float(value)/100.0); } );
 
-        scene().setSceneNode(value);
-    });
+    // wireframe / vector shaders
+    connect(ui->wireframeCheckBox, &QCheckBox::stateChanged,
+            [this](bool onOrOff) { scene().toggleWireframe(onOrOff); } );
+    connect(ui->vectorScaleSlider, &QSlider::valueChanged,
+            [this](int value) { scene().setVectorScale(float(value)/100.0); } );
 
-    connect(ui->materialComboBox, &QComboBox::currentTextChanged, [this](QString value)
-    {
-
-        scene().setMaterialNode(value,ui->modelComboBox->currentText());
-    });
-
-    connect(ui->light0Slider, &QSlider::valueChanged, [this](int value)
-    {
-        scene().setLightIntensity(0, float(value)/100); // slider goes from 0...1000
-    });
-    connect(ui->freqSlider, &QSlider::valueChanged, [this](int value)
-    {
-        scene().setDotFrequency(value); // slider goes from 0...1000
-    });
-
-    connect(ui->radiusSlider, &QSlider::valueChanged, [this](int value)
-    {
-        scene().setDotRadius(float(value)/100); // slider goes from 0...1000
-    });
-    connect(ui->shadesSpinBox,static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int shades)
-    {
-       scene().setToonShades(shades);
-    });
-    connect(ui->shininesslSlider,&QSlider::valueChanged, [this](float shininess)
-    {
-       scene().setToonShininess(shininess);
-    });
-    connect(ui->outlineSlider, &QSlider::valueChanged, [this](int value)
-    {
-        scene().setToonOutlineStroke(float(value)/100); // slider goes from 0...1 but val is 0 .. 100
-    });
-    connect(ui->dotEdit_r,&QLineEdit::textChanged, [this](QString value)
-    {
-       scene().setDotColor("r",value);
-    });
-
-    connect(ui->dotEdit_g,&QLineEdit::textChanged, [this](QString value)
-    {
-       scene().setDotColor("g",value);
-    });
-
-    connect(ui->dotEdit_b,&QLineEdit::textChanged, [this](QString value)
-    {
-       scene().setDotColor("b",value);
-    });
-    connect(ui->depthSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double depth)
-    {
-       scene().setWaveDepth(depth);
-    });
-    connect(ui->speedSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double speed)
-    {
-       scene().setWaveSpeed(speed);
-    });
-    connect(ui->heigthSpinBox,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double heigth)
-    {
-       scene().setWaveHeigth(heigth);
+    // from Stack overflow, syntax is ... great ...
+    connect(ui->vectorsGroup, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked),
+            [this](int which) {
+        scene().visualizeVectors(which);
     });
 
 }
 
-// called when the window is initially shown
+// called when initially shown
 void AppWindow::setDefaultUIValues() {
 
-    // the following commands will trigger signals that will
-    // result in scene methods being called. this can only
-    // be done once the scene has actually been instantiated.
-
-    // note: Qt will only trigger the actions if the value actually
-    // changes. As a workaround, we always change the value to one
-    // wrong value, and then the desired value :-(
-
-    // scene rendering parameters
-    ui->blackBgRadioButton->setChecked(true);
+    ui->animationCheckbox->hide();
+    ui->sunlightSlider->setValue(85.0);
+    ui->nightLightSlider->setValue(20.0);
+    ui->blendExpSlider->setValue(30.0);
+    ui->bumpMapSlider->setValue(10);
+    ui->dispMapSlider->setValue(10.0);
+    ui->vectorScaleSlider->setValue(10.0);
     ui->greyBgRadioButton->setChecked(true);
-    ui->light0Slider->setValue(0);
-    ui->light0Slider->setValue(80);
-    ui->modelComboBox->setCurrentText("Cube");
-    ui->modelComboBox->setCurrentText("Duck");
-    ui->shadesSpinBox->setValue(4);
-    ui->shadesSpinBox->setValue(3);
-    ui->shininesslSlider->setValue(70);
-    ui->shininesslSlider->setValue(80);
-    ui->outlineSlider->setValue(0.1);
-    ui->outlineSlider->setValue(0.2);
-    ui->depthSpinBox->setValue(0.2);
-    ui->depthSpinBox->setValue(0.1);
-    ui->speedSpinBox->setValue(2.0f);
-    ui->speedSpinBox->setValue(1.0f);
-    ui->heigthSpinBox->setValue(2.0f);
-    ui->heigthSpinBox->setValue(0.07f);
-
-    //min and max for outl with a bit of a sefety net on min
-    ui->outlineSlider->setMinimum(-10);
-    ui->outlineSlider->setMaximum(100);
-
 
 }
 
@@ -194,7 +139,7 @@ Scene &AppWindow::scene()
 void AppWindow::showUI()
 {
     ui->ui_container->show();
-    // default pixel margins
+    // default pixel margins (on Mac)
     ui->mainLayout->setContentsMargins(12,12,12,12);
 
 }
@@ -221,9 +166,9 @@ void AppWindow::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Q:
         close();
         return;
-
-    } // switch
+    }
 
     // pass on all other events to the scene
     scene().keyPressEvent(event);
+
 }
