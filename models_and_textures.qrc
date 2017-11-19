@@ -11,5 +11,7 @@
         <file>textures/earth_day.jpg</file>
         <file>textures/earth_topography_2048_NRM.png</file>
         <file>textures/earth_topography_2048.jpg</file>
+        <file>textures/distortion.png</file>
+        <file>textures/normal.png</file>
     </qresource>
 </RCC>
