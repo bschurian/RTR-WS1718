@@ -94,6 +94,7 @@ public slots:
     void setVectorScale(float v) {
         vectorsMaterial_->scale = v/10.0; update();
     }
+    void toggleGround(bool flag);
 
     // key/mouse events from UI system, pass on to navigators or such
     void keyPressEvent(QKeyEvent *event);

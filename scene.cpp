@@ -85,6 +85,8 @@ void Scene::makeNodes()
     auto clouds = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_clouds_2048.jpg").mirrored());
     auto disp   = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_topography_2048.jpg").mirrored());
     auto bumps  = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_topography_2048_NRM.png").mirrored());
+    auto disp2   = std::make_shared<QOpenGLTexture>(QImage(":/textures/distortion.png").mirrored());
+    auto bumps2  = std::make_shared<QOpenGLTexture>(QImage(":/textures/normal.png").mirrored());
 
     // tex parameters
     clouds->setWrapMode(QOpenGLTexture::DirectionS, QOpenGLTexture::Repeat);
@@ -95,8 +97,8 @@ void Scene::makeNodes()
     planetMaterial_->planet.nightTexture = night;
     planetMaterial_->planet.glossTexture = gloss;
     planetMaterial_->planet.cloudsTexture = clouds;
-    planetMaterial_->bump.tex = bumps;
-    planetMaterial_->displacement.tex = disp;
+    planetMaterial_->bump.tex = bumps2;
+    planetMaterial_->displacement.tex = disp2;
 
     // load meshes from .obj files and assign shader programs to them
     auto std = planetMaterial_;
@@ -108,7 +110,8 @@ void Scene::makeNodes()
     meshes_["Cube"]   = std::make_shared<Mesh>(make_shared<geom::Cube>(), std);
     meshes_["Sphere"] = std::make_shared<Mesh>(make_shared<geom::Planet>(80,80), std);
     meshes_["Torus"]  = std::make_shared<Mesh>(make_shared<geom::Torus>(4, 2, 120,40), std);
-    meshes_["Rect"]   = std::make_shared<Mesh>(make_shared<geom::Rect>(20,20), std);
+    meshes_["Rect"]   = std::make_shared<Mesh>(make_shared<geom::Rect>(200,200), std);
+    meshes_["Ground"] = std::make_shared<Mesh>(make_shared<geom::Rect>(200, 200), std);
 
     // pack each mesh into a scene node, along with a transform that scales
     // it to standard size [1,1,1]
@@ -119,6 +122,7 @@ void Scene::makeNodes()
     nodes_["Duck"]    = createNode(meshes_["Duck"], true);
     nodes_["Teapot"]  = createNode(meshes_["Teapot"], true);
     nodes_["Dwarf"]   = createNode(meshes_["Dwarf"], true);
+    nodes_["Ground"]  = createNode(meshes_["Ground"], true);
 
     // rotate some models
     nodes_["Sphere"]->transformation.rotate(-90, QVector3D(1,0,0));
@@ -409,6 +413,24 @@ void Scene::setSceneNode(QString node)
     nodes_["Scene"]->children.clear();
     nodes_["Scene"]->children.push_back(n);
 
+    update();
+}
+
+void Scene::toggleGround(bool flag)
+{
+    if(flag){
+        auto n = nodes_["Ground"];
+        assert(n);
+        nodes_["Scene"]->children.push_back(n);
+    }else{
+        auto i = 0;
+        while(i < nodes_["Scene"]->children.size()){
+            if(nodes_["Scene"]->children[i] == nodes_["Ground"]){
+                nodes_["Scene"]->children.erase(nodes_["Scene"]->children.begin()+i);
+            }
+            i++;
+        }
+    }
     update();
 }
 

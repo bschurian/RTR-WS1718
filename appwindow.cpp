@@ -94,6 +94,8 @@ AppWindow::AppWindow(QWidget *parent) :
             [this](int which) {
         scene().visualizeVectors(which);
     });
+    connect(ui->groundCheckBox, &QCheckBox::stateChanged,
+            [this](bool onOrOff) { scene().toggleGround(onOrOff); } );
 
 }
 
@@ -108,6 +110,8 @@ void AppWindow::setDefaultUIValues() {
     ui->dispMapSlider->setValue(10.0);
     ui->vectorScaleSlider->setValue(10.0);
     ui->greyBgRadioButton->setChecked(true);
+    ui->groundCheckBox->setChecked(false);
+    ui->groundCheckBox->setChecked(true);
 
 }
 
