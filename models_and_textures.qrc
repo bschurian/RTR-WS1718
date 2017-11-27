@@ -13,5 +13,8 @@
         <file>textures/earth_topography_2048.jpg</file>
         <file>textures/distortion.png</file>
         <file>textures/normal.png</file>
+        <file>textures/geroell.jpg</file>
+        <file>textures/grass.jpg</file>
+        <file>textures/sand.jpg</file>
     </qresource>
 </RCC>

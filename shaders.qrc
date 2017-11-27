@@ -13,5 +13,7 @@
         <file>shaders/wireframe.frag</file>
         <file>shaders/wireframe.geom</file>
         <file>shaders/wireframe.vert</file>
+        <file>shaders/ground.frag</file>
+        <file>shaders/ground.vert</file>
     </qresource>
 </RCC>

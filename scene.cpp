@@ -65,6 +65,10 @@ void Scene::makeNodes()
     planetMaterial_ = std::make_shared<PlanetMaterial>(planet_prog);
     planetMaterial_->phong.shininess = 10;
 
+    auto ground_prog = createProgram(":/shaders/planet_with_bumps.vert", ":/shaders/planet_with_bumps.frag");
+    groundMaterial_ = std::make_shared<GroundMaterial>(planet_prog);
+    groundMaterial_->phong.shininess = 10;
+
     // program (with additional geometry shader) to visualize wireframe
     auto wire_prog = createProgram(":/shaders/wireframe.vert",
                                    ":/shaders/wireframe.frag",
@@ -85,6 +89,8 @@ void Scene::makeNodes()
     auto clouds = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_clouds_2048.jpg").mirrored());
     auto disp   = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_topography_2048.jpg").mirrored());
     auto bumps  = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_topography_2048_NRM.png").mirrored());
+    auto groundDisp   = std::make_shared<QOpenGLTexture>(QImage(":/textures/distortion.jpg").mirrored());
+    auto groundBump  = std::make_shared<QOpenGLTexture>(QImage(":/textures/normal.png").mirrored());
 
     // tex parameters
     clouds->setWrapMode(QOpenGLTexture::DirectionS, QOpenGLTexture::Repeat);
@@ -98,8 +104,12 @@ void Scene::makeNodes()
     planetMaterial_->bump.tex = bumps;
     planetMaterial_->displacement.tex = disp;
 
+    // assign textures to material v2
+    groundMaterial_->bump.tex = groundBump;
+    groundMaterial_->displacement.tex = groundDisp;
+
     // load meshes from .obj files and assign shader programs to them
-    auto std = planetMaterial_;
+    auto std = groundMaterial_;
     meshes_["Duck"]    = std::make_shared<Mesh>(":/models/duck/duck.obj", std);
     meshes_["Teapot"]  = std::make_shared<Mesh>(":/models/teapot/teapot.obj", std);
     meshes_["Dwarf"]   = std::make_shared<Mesh>(":/models/dwarf/Dwarf_2_Low.obj", std);
