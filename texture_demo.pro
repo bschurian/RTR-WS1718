@@ -29,8 +29,7 @@ HEADERS      += \
     material/planet.h \
     material/wireframe.h \
     material/vectors.h \
-    geometry/parametric.h \
-    material/ground.h
+    geometry/parametric.h
 
 # C++ SOURCE FILES TO BE COMPILED AND LINKED TOGETHER
 SOURCES      += \
@@ -54,8 +53,7 @@ SOURCES      += \
     material/planet.cpp \
     material/wireframe.cpp \
     material/vectors.cpp \
-    geometry/parametric.cpp \
-    material/ground.cpp
+    geometry/parametric.cpp
 
 # RESOURCE FILES TO BE PROCESSED BY QT
 RESOURCES    += \

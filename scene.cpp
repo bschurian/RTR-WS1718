@@ -64,9 +64,11 @@ void Scene::makeNodes()
     auto planet_prog = createProgram(":/shaders/planet_with_bumps.vert", ":/shaders/planet_with_bumps.frag");
     planetMaterial_ = std::make_shared<PlanetMaterial>(planet_prog);
     planetMaterial_->phong.shininess = 10;
-    auto ground_prog = createProgram(":/shaders/ground.vert", ":/shaders/ground.frag");
-    groundMaterial_ = std::make_shared<Gro>(ground_prog);
-    groundMaterial_->phong.shininess = 10;
+
+//    auto ground_prog = createProgram(":/shaders/planet_with_bumps.vert", ":/shaders/planet_with_bumps.frag");
+//    auto ground_prog = createProgram(":/shaders/ground.vert", ":/shaders/ground.frag");
+//    groundMaterial_ = std::make_shared<PlanetMaterial>(ground_prog);
+//    groundMaterial_->phong.shininess = 10;
 
     // program (with additional geometry shader) to visualize wireframe
     auto wire_prog = createProgram(":/shaders/wireframe.vert",
@@ -104,11 +106,11 @@ void Scene::makeNodes()
     planetMaterial_->bump.tex = earthDisp;
     planetMaterial_->displacement.tex = earthBumps;
 
-    groundMaterial_->bump.tex = groundBump;
-    groundMaterial_->displacement.tex = groundDisp;
+//    groundMaterial_->bump.tex = groundBump;
+//    groundMaterial_->displacement.tex = groundDisp;
 
     // load meshes from .obj files and assign shader programs to them
-    auto std = groundMaterial_;
+    auto std = planetMaterial_;
     meshes_["Duck"]    = std::make_shared<Mesh>(":/models/duck/duck.obj", std);
     meshes_["Teapot"]  = std::make_shared<Mesh>(":/models/teapot/teapot.obj", std);
     meshes_["Dwarf"]   = std::make_shared<Mesh>(":/models/dwarf/Dwarf_2_Low.obj", std);
@@ -118,7 +120,7 @@ void Scene::makeNodes()
     meshes_["Sphere"] = std::make_shared<Mesh>(make_shared<geom::Planet>(80,80), std);
     meshes_["Torus"]  = std::make_shared<Mesh>(make_shared<geom::Torus>(4, 2, 120,40), std);
     meshes_["Rect"]   = std::make_shared<Mesh>(make_shared<geom::Rect>(200, 200), std);
-    meshes_["Ground"] = std::make_shared<Mesh>(make_shared<geom::Rect>(200, 200), groundMaterial_);
+    meshes_["Ground"] = std::make_shared<Mesh>(make_shared<geom::Rect>(200, 200), std);
 
     // pack each mesh into a scene node, along with a transform that scales
     // it to standard size [1,1,1]
