@@ -72,6 +72,11 @@
            </item>
            <item>
             <property name="text">
+             <string>Ground</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
              <string>Torus</string>
             </property>
            </item>
@@ -552,15 +557,7 @@
         <property name="title">
          <string>Ground</string>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_6">
-         <item>
-          <widget class="QCheckBox" name="groundCheckBox">
-           <property name="text">
-            <string>On</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <layout class="QVBoxLayout" name="verticalLayout_6"/>
        </widget>
       </item>
       <item>

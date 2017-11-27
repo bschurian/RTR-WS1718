@@ -64,6 +64,9 @@ void Scene::makeNodes()
     auto planet_prog = createProgram(":/shaders/planet_with_bumps.vert", ":/shaders/planet_with_bumps.frag");
     planetMaterial_ = std::make_shared<PlanetMaterial>(planet_prog);
     planetMaterial_->phong.shininess = 10;
+    auto ground_prog = createProgram(":/shaders/ground.vert", ":/shaders/ground.frag");
+    groundMaterial_ = std::make_shared<Gro>(ground_prog);
+    groundMaterial_->phong.shininess = 10;
 
     // program (with additional geometry shader) to visualize wireframe
     auto wire_prog = createProgram(":/shaders/wireframe.vert",
@@ -83,10 +86,11 @@ void Scene::makeNodes()
     auto night  = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_at_night_2048.jpg").mirrored());
     auto gloss  = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_bathymetry_2048.jpg").mirrored());
     auto clouds = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_clouds_2048.jpg").mirrored());
-    auto disp   = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_topography_2048.jpg").mirrored());
-    auto bumps  = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_topography_2048_NRM.png").mirrored());
-    auto disp2   = std::make_shared<QOpenGLTexture>(QImage(":/textures/distortion.png").mirrored());
-    auto bumps2  = std::make_shared<QOpenGLTexture>(QImage(":/textures/normal.png").mirrored());
+    auto earthDisp   = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_topography_2048.jpg").mirrored());
+    auto earthBumps  = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_topography_2048_NRM.png").mirrored());
+    auto groundDisp   = std::make_shared<QOpenGLTexture>(QImage(":/textures/distortion.png"));
+    auto groundBump  = std::make_shared<QOpenGLTexture>(QImage(":/textures/normal.png"));
+    auto gravel  = std::make_shared<QOpenGLTexture>(QImage(":/textures/geroell.jpg"));
 
     // tex parameters
     clouds->setWrapMode(QOpenGLTexture::DirectionS, QOpenGLTexture::Repeat);
@@ -97,11 +101,14 @@ void Scene::makeNodes()
     planetMaterial_->planet.nightTexture = night;
     planetMaterial_->planet.glossTexture = gloss;
     planetMaterial_->planet.cloudsTexture = clouds;
-    planetMaterial_->bump.tex = bumps2;
-    planetMaterial_->displacement.tex = disp2;
+    planetMaterial_->bump.tex = earthDisp;
+    planetMaterial_->displacement.tex = earthBumps;
+
+    groundMaterial_->bump.tex = groundBump;
+    groundMaterial_->displacement.tex = groundDisp;
 
     // load meshes from .obj files and assign shader programs to them
-    auto std = planetMaterial_;
+    auto std = groundMaterial_;
     meshes_["Duck"]    = std::make_shared<Mesh>(":/models/duck/duck.obj", std);
     meshes_["Teapot"]  = std::make_shared<Mesh>(":/models/teapot/teapot.obj", std);
     meshes_["Dwarf"]   = std::make_shared<Mesh>(":/models/dwarf/Dwarf_2_Low.obj", std);
@@ -110,8 +117,8 @@ void Scene::makeNodes()
     meshes_["Cube"]   = std::make_shared<Mesh>(make_shared<geom::Cube>(), std);
     meshes_["Sphere"] = std::make_shared<Mesh>(make_shared<geom::Planet>(80,80), std);
     meshes_["Torus"]  = std::make_shared<Mesh>(make_shared<geom::Torus>(4, 2, 120,40), std);
-    meshes_["Rect"]   = std::make_shared<Mesh>(make_shared<geom::Rect>(200,200), std);
-    meshes_["Ground"] = std::make_shared<Mesh>(make_shared<geom::Rect>(200, 200), std);
+    meshes_["Rect"]   = std::make_shared<Mesh>(make_shared<geom::Rect>(200, 200), std);
+    meshes_["Ground"] = std::make_shared<Mesh>(make_shared<geom::Rect>(200, 200), groundMaterial_);
 
     // pack each mesh into a scene node, along with a transform that scales
     // it to standard size [1,1,1]
