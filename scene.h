@@ -64,25 +64,25 @@ public slots:
     // methods to change material parameters
     void toggleAnimation(bool flag);
     void setLightIntensity(size_t, float v) {
-        planetMaterial_->lights[0].intensity = v; update();
+        groundMaterial_->lights[0].intensity = v; update();
     }
     void setBlendExponent(float v) {
-        planetMaterial_->planet.night_blend_exp= v*10.0; update();
+        groundMaterial_->planet.night_blend_exp= v*10.0; update();
     }
     void setNightScale(float v) {
-        planetMaterial_->planet.night_scale = v*5.0; update();
+        groundMaterial_->planet.night_scale = v*5.0; update();
     }
     void toggleBumpMapping(bool flag) {
-        planetMaterial_->bump.use = flag; update();
+        groundMaterial_->bump.use = flag; update();
     }
     void setBumpMapScale(float v) {
-        planetMaterial_->bump.scale = v*3; update();
+        groundMaterial_->bump.scale = v*3; update();
     }
     void toggleDisplacementMapping(bool flag) {
-        planetMaterial_->displacement.use = flag; update();
+        groundMaterial_->displacement.use = flag; update();
     }
     void setDisplacementMapScale(float v) {
-        planetMaterial_->displacement.scale = v/5.0; update();
+        groundMaterial_->displacement.scale = v/5.0; update();
     }
     void toggleWireframe(bool flag)  {
         showWireframe = flag; update();
@@ -143,7 +143,8 @@ protected:
     QVector3D bgcolor_ = QVector3D(0.4f,0.4f,0.4f);
 
     // different materials to be demonstrated
-    std::shared_ptr<PlanetMaterial> planetMaterial_, material_;
+    std::shared_ptr<PhongMaterial> material_;
+    std::shared_ptr<PlanetMaterial> planetMaterial_;
     std::shared_ptr<GroundMaterial> groundMaterial_;
     std::shared_ptr<WireframeMaterial> wireframeMaterial_;
     std::shared_ptr<VectorsMaterial> vectorsMaterial_;

@@ -108,6 +108,7 @@ void AppWindow::setDefaultUIValues() {
     ui->dispMapSlider->setValue(10.0);
     ui->vectorScaleSlider->setValue(10.0);
     ui->greyBgRadioButton->setChecked(true);
+    ui->modelComboBox->setCurrentText("Rect");
 
 }
 

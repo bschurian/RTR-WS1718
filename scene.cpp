@@ -65,8 +65,8 @@ void Scene::makeNodes()
     planetMaterial_ = std::make_shared<PlanetMaterial>(planet_prog);
     planetMaterial_->phong.shininess = 10;
 
-    auto ground_prog = createProgram(":/shaders/planet_with_bumps.vert", ":/shaders/planet_with_bumps.frag");
-    groundMaterial_ = std::make_shared<GroundMaterial>(planet_prog);
+    auto ground_prog = createProgram(":/shaders/ground.vert", ":/shaders/ground.frag");
+    groundMaterial_ = std::make_shared<GroundMaterial>(ground_prog);
     groundMaterial_->phong.shininess = 10;
 
     // program (with additional geometry shader) to visualize wireframe
@@ -89,8 +89,11 @@ void Scene::makeNodes()
     auto clouds = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_clouds_2048.jpg").mirrored());
     auto disp   = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_topography_2048.jpg").mirrored());
     auto bumps  = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_topography_2048_NRM.png").mirrored());
-    auto groundDisp   = std::make_shared<QOpenGLTexture>(QImage(":/textures/distortion.jpg").mirrored());
+    auto groundDisp   = std::make_shared<QOpenGLTexture>(QImage(":/textures/distortion.png").mirrored());
     auto groundBump  = std::make_shared<QOpenGLTexture>(QImage(":/textures/normal.png").mirrored());
+    auto sand  = std::make_shared<QOpenGLTexture>(QImage(":/textures/sand.png").mirrored());
+    auto gravel  = std::make_shared<QOpenGLTexture>(QImage(":/textures/gravel.png").mirrored());
+    auto grass  = std::make_shared<QOpenGLTexture>(QImage(":/textures/grass.png").mirrored());
 
     // tex parameters
     clouds->setWrapMode(QOpenGLTexture::DirectionS, QOpenGLTexture::Repeat);
@@ -109,7 +112,7 @@ void Scene::makeNodes()
     groundMaterial_->displacement.tex = groundDisp;
 
     // load meshes from .obj files and assign shader programs to them
-    auto std = groundMaterial_;
+    auto std = planetMaterial_;
     meshes_["Duck"]    = std::make_shared<Mesh>(":/models/duck/duck.obj", std);
     meshes_["Teapot"]  = std::make_shared<Mesh>(":/models/teapot/teapot.obj", std);
     meshes_["Dwarf"]   = std::make_shared<Mesh>(":/models/dwarf/Dwarf_2_Low.obj", std);
@@ -167,7 +170,7 @@ void Scene::setShader(QString txt)
         material_ = nullptr;
     }
     else if(txt == "Phong") {
-        material_ = planetMaterial_;
+        material_ = groundMaterial_;
         planetMaterial_->planet.debug_texcoords = false;
         planetMaterial_->planet.debugWaterLand = false;
         planetMaterial_->planet.useDayTexture = false;
@@ -176,7 +179,7 @@ void Scene::setShader(QString txt)
         planetMaterial_->planet.useCloudsTexture = false;
     }
     else if(txt == "Debug Tex Coords") {
-        material_ = planetMaterial_;
+        material_ = groundMaterial_;
         planetMaterial_->planet.debug_texcoords = true;
         planetMaterial_->planet.debugWaterLand = false;
         planetMaterial_->planet.useDayTexture = false;
@@ -185,7 +188,7 @@ void Scene::setShader(QString txt)
         planetMaterial_->planet.useCloudsTexture = false;
     }
     else if(txt == "Debug Day/Night") {
-        material_ = planetMaterial_;
+        material_ = groundMaterial_;
         planetMaterial_->planet.debug_texcoords = false;
         planetMaterial_->planet.debug = true;
         planetMaterial_->planet.debugWaterLand = false;
@@ -195,7 +198,7 @@ void Scene::setShader(QString txt)
         planetMaterial_->planet.useCloudsTexture = false;
     }
     else if(txt == "Day Texture") {
-        material_ = planetMaterial_;
+        material_ = groundMaterial_;
         planetMaterial_->planet.debug_texcoords = false;
         planetMaterial_->planet.debug = false;
         planetMaterial_->planet.debugWaterLand = false;
@@ -205,7 +208,7 @@ void Scene::setShader(QString txt)
         planetMaterial_->planet.useCloudsTexture = false;
     }
     else if(txt == "Night Texture") {
-        material_ = planetMaterial_;
+        material_ = groundMaterial_;
         planetMaterial_->planet.debug_texcoords = false;
         planetMaterial_->planet.debug = false;
         planetMaterial_->planet.debugWaterLand = false;
@@ -215,7 +218,7 @@ void Scene::setShader(QString txt)
         planetMaterial_->planet.useCloudsTexture = false;
     }
     else if(txt == "Day+Night Texture") {
-        material_ = planetMaterial_;
+        material_ = groundMaterial_;
         planetMaterial_->planet.debug_texcoords = false;
         planetMaterial_->planet.debug = false;
         planetMaterial_->planet.debugWaterLand = false;
@@ -225,7 +228,7 @@ void Scene::setShader(QString txt)
         planetMaterial_->planet.useCloudsTexture = false;
     }
     else if(txt == "Debug Gloss") {
-        material_ = planetMaterial_;
+        material_ = groundMaterial_;
         planetMaterial_->planet.debug_texcoords = false;
         planetMaterial_->planet.debug = false;
         planetMaterial_->planet.debugWaterLand = true;
@@ -235,7 +238,7 @@ void Scene::setShader(QString txt)
         planetMaterial_->planet.useCloudsTexture = false;
     }
     else if(txt == "Phong+Gloss") {
-        material_ = planetMaterial_;
+        material_ = groundMaterial_;
         planetMaterial_->planet.debug_texcoords = false;
         planetMaterial_->planet.debug = false;
         planetMaterial_->planet.debugWaterLand = false;
@@ -245,7 +248,7 @@ void Scene::setShader(QString txt)
         planetMaterial_->planet.useCloudsTexture = false;
     }
     else if(txt == "Day+Night+Gloss") {
-        material_ = planetMaterial_;
+        material_ = groundMaterial_;
         planetMaterial_->planet.debug_texcoords = false;
         planetMaterial_->planet.debug = false;
         planetMaterial_->planet.debugWaterLand = false;
@@ -255,7 +258,7 @@ void Scene::setShader(QString txt)
         planetMaterial_->planet.useCloudsTexture = false;
     }
     else if(txt == "+Clouds") {
-        material_ = planetMaterial_;
+        material_ = groundMaterial_;
         planetMaterial_->planet.debug_texcoords = false;
         planetMaterial_->planet.debug = false;
         planetMaterial_->planet.debugWaterLand = false;
@@ -353,6 +356,7 @@ void Scene::replaceMaterialAndDrawScene(const Camera& camera, shared_ptr<Materia
         // determine current light position and set it in all materials
         QMatrix4x4 lightToWorld = nodes_["World"]->toParentTransform(lightNodes_[i]);
         planetMaterial_->lights[i].position_WC = lightToWorld * QVector3D(0,0,0);
+        groundMaterial_->lights[i].position_WC = lightToWorld * QVector3D(0,0,0);
 
         // draw light pass i
         nodes_["World"]->draw(camera, i);
