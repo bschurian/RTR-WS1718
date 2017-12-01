@@ -426,6 +426,11 @@ void Scene::setSceneNode(QString node)
     update();
 }
 
+void Scene::moveGround(QVector2D movement)
+{
+//TODO BS implement
+}
+
 // pass key/mouse events on to navigator objects
 void Scene::keyPressEvent(QKeyEvent *event) {
 

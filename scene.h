@@ -63,6 +63,7 @@ public slots:
 
     // methods to change material parameters
     void toggleAnimation(bool flag);
+    void moveGround(QVector2D movement);
     void setLightIntensity(size_t, float v) {
         groundMaterial_->lights[0].intensity = v; update();
     }
