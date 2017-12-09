@@ -38,47 +38,30 @@ struct PhongMaterial {
 };
 uniform PhongMaterial phong;
 
-struct PlanetMaterial {
+struct SurfaceMaterial {
 
     // additional textures
-    bool useDayTexture;
-    bool useNightTexture;
-    bool useGlossTexture;
-    bool useCloudsTexture;
-    sampler2D dayTexture;
-    sampler2D nightTexture;
-    sampler2D glossTexture;
-    sampler2D cloudsTexture;
-    float night_scale;
-    float night_blend_exp;
-
-    // debugging
-    bool debug;
-    bool debug_texcoords;
-    bool debugWaterLand;
-
-    // animation
-    bool animateClouds;
+    sampler2D grassTexture;
+    sampler2D gravelTexture;
+    sampler2D sandTexture;
 
 };
-uniform PlanetMaterial planet;
+uniform SurfaceMaterial surface;
 
 struct BumpMaterial {
-    bool use;
-    bool debug;
     float scale;
     sampler2D tex;
 };
 uniform BumpMaterial bump;
 
 struct DisplacementMaterial {
-    bool use;
     float scale;
     sampler2D tex;
 };
 uniform DisplacementMaterial displacement;
 
 // more uniforms
+uniform mat4 modelViewMatrix;
 uniform mat4  projectionMatrix;
 uniform float time;
 uniform vec3  ambientLightIntensity;
@@ -87,21 +70,15 @@ uniform vec3  ambientLightIntensity;
  *  Calculate surface color based on Phong illumination model.
  */
 
-vec3 planetshader(vec3 n, vec3 v, vec3 l, vec2 uv) {
+vec3 surfaceshader(vec3 n, vec3 v, vec3 l, vec2 uv) {
 
-    // animation
-    vec2 uv_clouds = planet.animateClouds? uv+vec2(time*0.02,0) : uv;
+    uv *= 3;
 
     // texture lookups
-    vec3  dayCol = texture(planet.dayTexture, uv).rgb;
-    vec3  nightCol = texture(planet.nightTexture, uv).rgb;
-    bool  atSea = texture(planet.glossTexture, uv).r > 0.008;
-    float cloudDensity = texture(planet.cloudsTexture, uv_clouds).r;
-
-    // make brighter / gamma correction
-    dayCol = pow(dayCol, vec3(0.6))*2.0;
-    nightCol = pow(nightCol, vec3(0.5)) * planet.night_scale;
-    cloudDensity = pow(cloudDensity, 0.8);
+    vec3 grassCol = texture(surface.grassTexture, uv).rgb;
+    vec3 gravelCol = texture(surface.gravelTexture, uv).rgb;
+    vec3 sandCol = texture(surface.sandTexture, uv).rgb;
+    vec3 snowCol = vec3(1,1,1);
 
     // cosine of angle between light and surface normal.
     float ndotl = dot(n,l);
@@ -109,28 +86,10 @@ vec3 planetshader(vec3 n, vec3 v, vec3 l, vec2 uv) {
     // visualizing texture coords + day/night border
     float debugFactor = 1.0;
     const float dawnThreshold = cos(radians(89.0));
-    if(planet.debug) {
-        if(mod(uv.x, 0.05) >= 0.025) {
-            debugFactor = 0.7; // darker bands in u direction
-        }
-        if(abs(ndotl)<dawnThreshold) {
-            return vec3(0.2,0.6,0.2); // green day/night line
-        }
-    }
 
     // ambient part
-    vec3 ambient = (planet.useNightTexture? nightCol : phong.k_ambient) *
+    vec3 ambient = phong.k_ambient *
                    ambientLightIntensity * debugFactor;
-
-    // just show water vs. land
-    if(planet.debugWaterLand) {
-        ambient = atSea? vec3(0.5,0,0) : vec3(0,0.5,0);
-    }
-
-    // clouds at night?
-    if(planet.useCloudsTexture) {
-        ambient = (1.0-cloudDensity)*ambient + cloudDensity * vec3(0.1,0.1,0.1);
-    }
 
     // surface back-facing to light?
     if(ndotl<=0.0)
@@ -139,21 +98,24 @@ vec3 planetshader(vec3 n, vec3 v, vec3 l, vec2 uv) {
         ndotl = max(ndotl, 0.0);
 
     // diffuse contribution
-    vec3 diffuseCoeff = planet.useDayTexture? dayCol : phong.k_diffuse;
-    if(planet.debugWaterLand) {
-        diffuseCoeff = atSea? vec3(0.8,0,0) : vec3(0,0.8,0);
+    vec3 diffuseCoeff = gravelCol;
+//     : phong.k_diffuse
+
+    //heigth of a mountain
+    float height = (inverse(modelViewMatrix) * position_EC).y;
+
+    if(height > 0.15){
+        diffuseCoeff = snowCol;
     }
 
     // clouds at day?
-    if(planet.useCloudsTexture) {
-        diffuseCoeff = (1.0-cloudDensity)*diffuseCoeff
-                       + cloudDensity*vec3(1.5,1.5,1.5);
-    }
+//        diffuseCoeff = (1.0-cloudDensity)*diffuseCoeff + cloudDensity*vec3(1.5,1.5,1.5);
     // final diffuse term for daytime
-    vec3 diffuse =  diffuseCoeff * light.intensity * ndotl * debugFactor;
+    vec3 diffuse =  diffuseCoeff * light.intensity * ndotl;
+
 
     // ambient part contains lights; modify depending on time of day
-    ambient *= pow(1.0-ndotl,planet.night_blend_exp);
+//    ambient *= pow(1.0-ndotl,surface.night_blend_exp);
 
      // reflected light direction = perfect reflection direction
     vec3 r = reflect(-l,n);
@@ -161,18 +123,8 @@ vec3 planetshader(vec3 n, vec3 v, vec3 l, vec2 uv) {
     // cosine of angle between reflection dir and viewing dir
     float rdotv = max( dot(r,v), 0.0);
 
-    // specular contribution + gloss map
-    bool loShine = planet.useGlossTexture && !atSea;
-    vec3 specularCoeff = phong.k_specular;
-    float exponent = phong.shininess;
-    if(loShine) {
-        specularCoeff /= 6;
-        exponent = 15;
-    }
-    vec3 specular = specularCoeff * light.intensity * pow(rdotv, exponent);
-
     // return sum of all contributions
-    return ambient + diffuse + specular;
+    return ambient + diffuse;
 
 }
 
@@ -187,18 +139,13 @@ void main() {
     vec3 bumpValue = texture(bump.tex, texcoord_frag).xyz;
 
     // get bump direction (in tangent space) from bump texture
-    vec3 N = bump.use? decodeNormal(bumpValue) : vec3(0,0,1);
+    vec3 N = decodeNormal(bumpValue);
     vec3 V = normalize(viewDir_TS);
     vec3 L = normalize(lightDir_TS);
 
-    // calculate color using phong illumination
-    vec3 color = planetshader(N, V, L, texcoord_frag);
+    // calculate color using diffuse illumination
+    vec3 color = surfaceshader(N, V, L, texcoord_frag);
     
     // set fragment color
-    if(planet.debug_texcoords)
-        outColor = vec4(texcoord_frag, 0, 1);
-    else if(bump.debug)
-        outColor = vec4((N+vec3(1,1,1)/2), 1);
-    else
-        outColor = vec4(color, 1.0);
+    outColor = vec4(color, 1.0);
 }

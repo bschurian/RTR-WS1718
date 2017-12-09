@@ -201,4 +201,5 @@ void main() {
         outColor = vec4((N+vec3(1,1,1)/2), 1);
     else
         outColor = vec4(color, 1.0);
+    outColor = vec4(0,0,1,1);
 }

@@ -89,15 +89,19 @@ void Scene::makeNodes()
     auto clouds = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_clouds_2048.jpg").mirrored());
     auto disp   = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_topography_2048.jpg").mirrored());
     auto bumps  = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_topography_2048_NRM.png").mirrored());
-    auto groundDisp   = std::make_shared<QOpenGLTexture>(QImage(":/textures/distortion.png").mirrored());
-    auto groundBump  = std::make_shared<QOpenGLTexture>(QImage(":/textures/normal.png").mirrored());
-    auto sand  = std::make_shared<QOpenGLTexture>(QImage(":/textures/sand.png").mirrored());
-    auto gravel  = std::make_shared<QOpenGLTexture>(QImage(":/textures/gravel.png").mirrored());
-    auto grass  = std::make_shared<QOpenGLTexture>(QImage(":/textures/grass.png").mirrored());
+    auto groundDisp  = std::make_shared<QOpenGLTexture>(QImage(":/textures/noise.png").mirrored());
+    auto groundBump  = std::make_shared<QOpenGLTexture>(QImage(":/textures/noiseNorm.png").mirrored());
+    auto grass       = std::make_shared<QOpenGLTexture>(QImage(":/textures/grass.jpg").mirrored());
+    auto gravel      = std::make_shared<QOpenGLTexture>(QImage(":/textures/geroell.jpg").mirrored());
+    auto sand        = std::make_shared<QOpenGLTexture>(QImage(":/textures/sand.jpg").mirrored());
 
     // tex parameters
     clouds->setWrapMode(QOpenGLTexture::DirectionS, QOpenGLTexture::Repeat);
     clouds->setWrapMode(QOpenGLTexture::DirectionT, QOpenGLTexture::Repeat);
+    groundDisp->setWrapMode(QOpenGLTexture::DirectionS, QOpenGLTexture::Repeat);
+    groundDisp->setWrapMode(QOpenGLTexture::DirectionT, QOpenGLTexture::Repeat);
+    groundBump->setWrapMode(QOpenGLTexture::DirectionS, QOpenGLTexture::Repeat);
+    groundBump->setWrapMode(QOpenGLTexture::DirectionT, QOpenGLTexture::Repeat);
 
     // assign textures to material
     planetMaterial_->planet.dayTexture = day;
@@ -108,11 +112,18 @@ void Scene::makeNodes()
     planetMaterial_->displacement.tex = disp;
 
     // assign textures to material v2
+    groundMaterial_->phong.k_ambient = QVector3D(0.2f, 0.2f, 0.25f);
+    groundMaterial_->surfaces.grassTexture = grass;
+    groundMaterial_->surfaces.gravelTexture = gravel;
+    groundMaterial_->surfaces.sandTexture = sand;
     groundMaterial_->bump.tex = groundBump;
     groundMaterial_->displacement.tex = groundDisp;
 
+    vectorsMaterial_->bump.tex = groundBump;
+    vectorsMaterial_->displacement.tex = groundDisp;
+
     // load meshes from .obj files and assign shader programs to them
-    auto std = planetMaterial_;
+    auto std = groundMaterial_;
     meshes_["Duck"]    = std::make_shared<Mesh>(":/models/duck/duck.obj", std);
     meshes_["Teapot"]  = std::make_shared<Mesh>(":/models/teapot/teapot.obj", std);
     meshes_["Dwarf"]   = std::make_shared<Mesh>(":/models/dwarf/Dwarf_2_Low.obj", std);
@@ -121,7 +132,7 @@ void Scene::makeNodes()
     meshes_["Cube"]   = std::make_shared<Mesh>(make_shared<geom::Cube>(), std);
     meshes_["Sphere"] = std::make_shared<Mesh>(make_shared<geom::Planet>(80,80), std);
     meshes_["Torus"]  = std::make_shared<Mesh>(make_shared<geom::Torus>(4, 2, 120,40), std);
-    meshes_["Rect"]   = std::make_shared<Mesh>(make_shared<geom::Rect>(20,20), std);
+    meshes_["Rect"]   = std::make_shared<Mesh>(make_shared<geom::Rect>(200,200), std);
 
     // pack each mesh into a scene node, along with a transform that scales
     // it to standard size [1,1,1]
@@ -428,7 +439,8 @@ void Scene::setSceneNode(QString node)
 
 void Scene::moveGround(QVector2D movement)
 {
-//TODO BS implement
+    //TODO BS implement
+    groundMaterial_->translation += movement;
 }
 
 // pass key/mouse events on to navigator objects

@@ -104,8 +104,8 @@ void AppWindow::setDefaultUIValues() {
     ui->sunlightSlider->setValue(85.0);
     ui->nightLightSlider->setValue(20.0);
     ui->blendExpSlider->setValue(30.0);
-    ui->bumpMapSlider->setValue(10);
-    ui->dispMapSlider->setValue(10.0);
+    ui->bumpMapSlider->setValue(100);
+    ui->dispMapSlider->setValue(100);
     ui->vectorScaleSlider->setValue(10.0);
     ui->greyBgRadioButton->setChecked(true);
     ui->modelComboBox->setCurrentText("Rect");

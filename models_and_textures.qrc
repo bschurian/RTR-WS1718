@@ -16,5 +16,7 @@
         <file>textures/geroell.jpg</file>
         <file>textures/grass.jpg</file>
         <file>textures/sand.jpg</file>
+        <file>textures/noise.png</file>
+        <file>textures/noiseNorm.png</file>
     </qresource>
 </RCC>

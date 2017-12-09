@@ -68,22 +68,24 @@ public slots:
         groundMaterial_->lights[0].intensity = v; update();
     }
     void setBlendExponent(float v) {
-        groundMaterial_->planet.night_blend_exp= v*10.0; update();
+        planetMaterial_->planet.night_blend_exp= v*10.0; update();
     }
     void setNightScale(float v) {
-        groundMaterial_->planet.night_scale = v*5.0; update();
+        planetMaterial_->planet.night_scale = v*5.0; update();
     }
     void toggleBumpMapping(bool flag) {
-        groundMaterial_->bump.use = flag; update();
+        planetMaterial_->bump.use = flag; update();
     }
     void setBumpMapScale(float v) {
-        groundMaterial_->bump.scale = v*3; update();
+        groundMaterial_->bump.scale = v*3;
+        vectorsMaterial_->bump.scale = v*3; update();
     }
     void toggleDisplacementMapping(bool flag) {
-        groundMaterial_->displacement.use = flag; update();
+        planetMaterial_->displacement.use = flag; update();
     }
     void setDisplacementMapScale(float v) {
-        groundMaterial_->displacement.scale = v/5.0; update();
+        groundMaterial_->displacement.scale = v/100 * 20;
+        vectorsMaterial_->displacement.scale = v/100 * 20; update();
     }
     void toggleWireframe(bool flag)  {
         showWireframe = flag; update();

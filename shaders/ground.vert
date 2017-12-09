@@ -29,7 +29,6 @@ struct PointLight {
 uniform PointLight light;
 
 struct DisplacementMaterial {
-    bool use;
     float scale;
     sampler2D tex;
 };
@@ -64,13 +63,11 @@ vec4 displace(vec4 pos) {
     return pos;
 }
 
-
 void main(void) {
 
     // apply displacement mapping?
     vec4 pos = vec4(position_MC,1);
-    if(displacement.use)
-        pos = displace(pos);
+    pos = displace(pos);
 
     // vertex/fragment position in clip coordinates
     gl_Position  = modelViewProjectionMatrix * pos;

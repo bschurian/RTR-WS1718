@@ -15,37 +15,25 @@ public:
         : PhongMaterial(prog) {}
 
     // planet-specific properties
-    struct Planet {
-        bool useDayTexture = false;
-        bool useNightTexture = false;
-        bool useGlossTexture = false;
-        bool useCloudsTexture = false;
-        std::shared_ptr<QOpenGLTexture> dayTexture;
-        std::shared_ptr<QOpenGLTexture> nightTexture;
-        std::shared_ptr<QOpenGLTexture> glossTexture;
-        std::shared_ptr<QOpenGLTexture> cloudsTexture;
-        float night_scale = 1.0;
-        float night_blend_exp = 3.0;
-        bool debug = false;
-        bool debug_texcoords = false;
-        bool debugWaterLand = false;
-        bool animateClouds = false;
-    } planet;
+    struct Surfaces {
+        std::shared_ptr<QOpenGLTexture> grassTexture;
+        std::shared_ptr<QOpenGLTexture> gravelTexture;
+        std::shared_ptr<QOpenGLTexture> sandTexture;
+    } surfaces;
 
     // bump mapping
     struct Bump {
-        bool use = false;
         float scale = 1.0;
-        float debug = false;
         std::shared_ptr<QOpenGLTexture> tex;
     } bump;
 
     // displacement mapping
     struct Displacement {
-        bool use = false;
         float scale = 1.0;
         std::shared_ptr<QOpenGLTexture> tex;
     } displacement;
+
+    QVector2D translation = QVector2D(0.0, 0.0) ;
 
     // bind underlying shader program and set required uniforms
     void apply(unsigned int light_pass = 0) override;
