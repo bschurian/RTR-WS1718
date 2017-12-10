@@ -21,7 +21,7 @@ public:
 
     // use (shift) cursor keys to move things around
     void keyPressEvent(QKeyEvent *event) override;
-    void keyReleaseEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event) override;
     // how much translation for every frame?
     QVector3D speedarr = QVector3D(0,0,0);
 
