@@ -19,6 +19,7 @@
 
 #include "navigator/rotate_y.h"
 #include "navigator/position_navigator.h"
+#include "navigator/plane_navigator.h"
 
 #include <memory> // std::unique_ptr
 #include <map>    // std::map
@@ -64,6 +65,8 @@ public slots:
     // methods to change material parameters
     void toggleAnimation(bool flag);
     void moveGround(QVector2D movement);
+
+    void refreshTexture();
     void setLightIntensity(size_t, float v) {
         groundMaterial_->lights[0].intensity = v; update();
     }
@@ -84,8 +87,8 @@ public slots:
         planetMaterial_->displacement.use = flag; update();
     }
     void setDisplacementMapScale(float v) {
-        groundMaterial_->displacement.scale = v/100 * 20;
-        vectorsMaterial_->displacement.scale = v/100 * 20; update();
+        groundMaterial_->displacement.scale = v/100 * 80;
+        vectorsMaterial_->displacement.scale = v/100 * 80; update();
     }
     void toggleWireframe(bool flag)  {
         showWireframe = flag; update();
@@ -101,6 +104,7 @@ public slots:
 
     // key/mouse events from UI system, pass on to navigators or such
     void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
@@ -168,6 +172,10 @@ protected:
     // navigation
     std::unique_ptr<RotateY> cameraNavigator_;
     std::unique_ptr<PositionNavigator> lightNavigator_;
+    std::unique_ptr<PlaneNavigator> planeNavigator_;
+
+    QVector3D planespeed = QVector3D(0.0,0.0,0.0);
+    bool plane_started = false;
 
     // helper for creating programs from shader files
     std::shared_ptr<QOpenGLShaderProgram> createProgram(const std::string& vertex,

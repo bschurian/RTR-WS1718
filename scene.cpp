@@ -50,8 +50,9 @@ Scene::Scene(QWidget* parent, QOpenGLContext *context) :
 
     // initialize navigation controllers
     cameraNavigator_ = std::make_unique<RotateY>(nodes_["Camera"], nullptr, nullptr);
-    cameraNavigator_->setDistance(3.0);
+    cameraNavigator_->setDistance(5.0);
     lightNavigator_ = std::make_unique<PositionNavigator>(nodes_["Light0"], nodes_["World"], nodes_["Camera"]);
+    planeNavigator_ = std::make_unique<PlaneNavigator>(nodes_["Rect"], nodes_["World"], nodes_["Camera"]);
 
     // make sure we redraw when the timer hits
     connect(&timer_, SIGNAL(timeout()), this, SLOT(update()) );
@@ -132,7 +133,7 @@ void Scene::makeNodes()
     meshes_["Cube"]   = std::make_shared<Mesh>(make_shared<geom::Cube>(), std);
     meshes_["Sphere"] = std::make_shared<Mesh>(make_shared<geom::Planet>(80,80), std);
     meshes_["Torus"]  = std::make_shared<Mesh>(make_shared<geom::Torus>(4, 2, 120,40), std);
-    meshes_["Rect"]   = std::make_shared<Mesh>(make_shared<geom::Rect>(200,200), std);
+    meshes_["Rect"]   = std::make_shared<Mesh>(make_shared<geom::Rect>(1000,1000), std);
 
     // pack each mesh into a scene node, along with a transform that scales
     // it to standard size [1,1,1]
@@ -147,7 +148,8 @@ void Scene::makeNodes()
     // rotate some models
     nodes_["Sphere"]->transformation.rotate(-90, QVector3D(1,0,0));
     nodes_["Torus"]->transformation.rotate(-60, QVector3D(1,0,0));
-    nodes_["Rect"]->transformation.rotate(30, QVector3D(1,0,0));
+    //nodes_["Rect"]->transformation.rotate(10, QVector3D(1,0,0));
+    nodes_["Rect"]->transformation.scale(10.0);
 
 }
 
@@ -446,14 +448,19 @@ void Scene::moveGround(QVector2D movement)
 // pass key/mouse events on to navigator objects
 void Scene::keyPressEvent(QKeyEvent *event) {
 
+    if(plane_started==false && event->key() == Qt::Key_Up)
+        plane_started = true;
     // dispatch: when Modifier is pressed, navigate light, else camera
     if(event->modifiers() & Qt::AltModifier)
         lightNavigator_->keyPressEvent(event);
     else
-        cameraNavigator_->keyPressEvent(event);
+        //cameraNavigator_->keyPressEvent(event);
+        planeNavigator_->keyPressEvent(event);
 
     update();
-
+}
+void Scene::keyReleaseEvent(QKeyEvent *event){
+    planeNavigator_->keyReleaseEvent(event);
 }
 // mouse press events all processed by trackball navigator
 void Scene::mousePressEvent(QMouseEvent *)
@@ -472,12 +479,31 @@ void Scene::wheelEvent(QWheelEvent *)
 // trigger a redraw of the widget through this method
 void Scene::update()
 {
+    qDebug() << "plane_started: " << plane_started;
+    if(plane_started)
+        refreshTexture();
+
     parent_->update();
 }
 
 void Scene::updateViewport(size_t width, size_t height)
 {
     glViewport(0,0,GLint(width),GLint(height));
+}
+
+void Scene::refreshTexture(){
+    if(planeNavigator_->speedarr!=QVector3D(0,0,0)){
+        if(planeNavigator_->speedarr.x()==1)
+            planespeed[0]+=0.0001f;
+        if(planeNavigator_->speedarr.x()==-1 && planespeed[0]>0.0001f)
+            planespeed[0]-=0.0001f;
+        if(planeNavigator_->speedarr.y()==1)
+            planespeed[1]+=0.0001f;
+        if(planeNavigator_->speedarr.y()==-1)
+            planespeed[1]-=0.0001f;
+    }
+    qDebug() << "X: " << planespeed.x() << "Y: " << planespeed.y();
+    moveGround(QVector2D(planespeed.x(),planespeed.y()));
 }
 
 
