@@ -24,6 +24,9 @@ void GroundMaterial::apply(unsigned int light_pass)
     prog_->setUniformValue("displacement.scale", displacement.scale);
     prog_->setUniformValue("displacement.tex", 4); displacement.tex->bind(4);
 
+    //movement of the texture
+    prog_->setUniformValue("translation", translation);
+
 }
 
 

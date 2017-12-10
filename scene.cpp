@@ -147,7 +147,7 @@ void Scene::makeNodes()
     // rotate some models
     nodes_["Sphere"]->transformation.rotate(-90, QVector3D(1,0,0));
     nodes_["Torus"]->transformation.rotate(-60, QVector3D(1,0,0));
-    nodes_["Rect"]->transformation.rotate(30, QVector3D(1,0,0));
+//    nodes_["Rect"]->transformation.rotate(30, QVector3D(1,0,0));
 
 }
 
@@ -439,8 +439,8 @@ void Scene::setSceneNode(QString node)
 
 void Scene::moveGround(QVector2D movement)
 {
-    //TODO BS implement
     groundMaterial_->translation += movement;
+    update();
 }
 
 // pass key/mouse events on to navigator objects

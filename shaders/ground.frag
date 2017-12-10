@@ -60,6 +60,8 @@ struct DisplacementMaterial {
 };
 uniform DisplacementMaterial displacement;
 
+uniform vec2 translation;
+
 // more uniforms
 uniform mat4 modelViewMatrix;
 uniform mat4  projectionMatrix;
@@ -73,6 +75,7 @@ uniform vec3  ambientLightIntensity;
 vec3 surfaceshader(vec3 n, vec3 v, vec3 l, vec2 uv) {
 
     uv *= 3;
+    uv += translation;
 
     // texture lookups
     vec3 grassCol = texture(surface.grassTexture, uv).rgb;
@@ -98,15 +101,29 @@ vec3 surfaceshader(vec3 n, vec3 v, vec3 l, vec2 uv) {
         ndotl = max(ndotl, 0.0);
 
     // diffuse contribution
-    vec3 diffuseCoeff = gravelCol;
+    vec3 diffuseCoeff = sandCol;
 //     : phong.k_diffuse
 
-    //heigth of a mountain
+    //heigth of this fragment
     float height = (inverse(modelViewMatrix) * position_EC).y;
+
+    //steepness
+    float steepness = n.z;
 
     if(height > 0.15){
         diffuseCoeff = snowCol;
+    }else{
+        if(steepness < 0.5){
+            diffuseCoeff = gravelCol;
+        }else{
+            if(height < 0.2){
+                diffuseCoeff = grassCol;
+            }
+        }
     }
+
+
+
 
     // clouds at day?
 //        diffuseCoeff = (1.0-cloudDensity)*diffuseCoeff + cloudDensity*vec3(1.5,1.5,1.5);
@@ -136,7 +153,7 @@ vec3 decodeNormal(vec3 normal) {
 void main() {
 
     // default normal in tangent space is (0,0,1).
-    vec3 bumpValue = texture(bump.tex, texcoord_frag).xyz;
+    vec3 bumpValue = texture(bump.tex, texcoord_frag+translation).xyz;
 
     // get bump direction (in tangent space) from bump texture
     vec3 N = decodeNormal(bumpValue);
