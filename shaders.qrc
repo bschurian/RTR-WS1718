@@ -15,5 +15,7 @@
         <file>shaders/wireframe.vert</file>
         <file>shaders/ground.frag</file>
         <file>shaders/ground.vert</file>
+        <file>shaders/cube_mapping.frag</file>
+        <file>shaders/cube_mapping.vert</file>
     </qresource>
 </RCC>

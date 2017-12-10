@@ -19,5 +19,6 @@
         <file>textures/noise.png</file>
         <file>textures/noiseNorm.png</file>
         <file>textures/stone.jpg</file>
+        <file>textures/skybox_texture.jpg</file>
     </qresource>
 </RCC>

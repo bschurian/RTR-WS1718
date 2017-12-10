@@ -14,6 +14,7 @@
 #include "material/phong.h"
 #include "material/planet.h"
 #include "material/ground.h"
+#include "material/cubemapping.h"
 #include "material/vectors.h"
 #include "material/wireframe.h"
 
@@ -153,6 +154,7 @@ protected:
     std::shared_ptr<PhongMaterial> material_;
     std::shared_ptr<PlanetMaterial> planetMaterial_;
     std::shared_ptr<GroundMaterial> groundMaterial_;
+    std::shared_ptr<CubeMappingMaterial> skyBoxMaterial_;
     std::shared_ptr<WireframeMaterial> wireframeMaterial_;
     std::shared_ptr<VectorsMaterial> vectorsMaterial_;
 

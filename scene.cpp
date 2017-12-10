@@ -165,6 +165,14 @@ void Scene::makeScene()
     nodes_["Scene"] = createNode(nullptr, false);
     nodes_["World"]->children.push_back(nodes_["Scene"]);
 
+    //create SkyBox
+    // load shader source files and compile them into OpenGL program objects
+//    auto skybox_prog = createProgram(":/shaders/cube_mapping.vert", ":/shaders/cube_mapping.frag");
+//    skyBoxMaterial_ = std::make_shared<CubeMappingMaterial>(skybox_prog);
+//    auto sky        = std::make_shared<QOpenGLTexture>(QImage(":/textures/skybox_texture.jpg").mirrored());
+//    skyBoxMaterial_->skyTexture = sky;
+//    nodes_["SkyBox"] = createNode(std::make_shared<Mesh>(make_shared<geom::Cube>(), skyBoxMaterial_), false);
+
     // add camera node
     nodes_["Camera"] = createNode(nullptr, false);
     nodes_["World"]->children.push_back(nodes_["Camera"]);
@@ -175,7 +183,7 @@ void Scene::makeScene()
 
     // light attached to camera, placed right above camera
     nodes_["Camera"]->children.push_back(nodes_["Light0"]);
-    nodes_["Light0"]->transformation.translate(QVector3D(3, 10, 0));
+    nodes_["Light0"]->transformation.translate(QVector3D(10, 0, 0));
 
 }
 
