@@ -18,5 +18,6 @@
         <file>textures/sand.jpg</file>
         <file>textures/noise.png</file>
         <file>textures/noiseNorm.png</file>
+        <file>textures/stone.jpg</file>
     </qresource>
 </RCC>

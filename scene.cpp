@@ -94,6 +94,7 @@ void Scene::makeNodes()
     auto grass       = std::make_shared<QOpenGLTexture>(QImage(":/textures/grass.jpg").mirrored());
     auto gravel      = std::make_shared<QOpenGLTexture>(QImage(":/textures/geroell.jpg").mirrored());
     auto sand        = std::make_shared<QOpenGLTexture>(QImage(":/textures/sand.jpg").mirrored());
+    auto stone        = std::make_shared<QOpenGLTexture>(QImage(":/textures/stone.jpg").mirrored());
 
     // tex parameters
     clouds->setWrapMode(QOpenGLTexture::DirectionS, QOpenGLTexture::Repeat);
@@ -116,6 +117,7 @@ void Scene::makeNodes()
     groundMaterial_->surfaces.grassTexture = grass;
     groundMaterial_->surfaces.gravelTexture = gravel;
     groundMaterial_->surfaces.sandTexture = sand;
+    groundMaterial_->surfaces.stoneTexture = stone;
     groundMaterial_->bump.tex = groundBump;
     groundMaterial_->displacement.tex = groundDisp;
 

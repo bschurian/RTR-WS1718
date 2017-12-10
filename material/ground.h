@@ -19,6 +19,7 @@ public:
         std::shared_ptr<QOpenGLTexture> grassTexture;
         std::shared_ptr<QOpenGLTexture> gravelTexture;
         std::shared_ptr<QOpenGLTexture> sandTexture;
+        std::shared_ptr<QOpenGLTexture> stoneTexture;
     } surfaces;
 
     // bump mapping
