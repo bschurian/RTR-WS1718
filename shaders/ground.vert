@@ -34,6 +34,8 @@ struct DisplacementMaterial {
 };
 uniform DisplacementMaterial displacement;
 
+uniform vec2 translation;
+
 // output - transformed to eye coordinates (EC)
 out vec4 position_EC;
 out vec3 normal_EC;
@@ -49,7 +51,7 @@ out vec2 texcoord_frag;
 vec4 displace(vec4 pos) {
 
     // read displacement value from displacement map
-    float disp = texture(displacement.tex, texcoord).r;
+    float disp = texture(displacement.tex, texcoord+translation).r;
 
     // apply inverse of model-to-world scaling factor to displacement factor
     disp *= 1.0 / modelMatrix[0][0];

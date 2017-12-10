@@ -69,7 +69,7 @@ AppWindow::AppWindow(QWidget *parent) :
     connect(ui->sunlightSlider, &QSlider::valueChanged,
             [this](int value) { scene().setLightIntensity(0, float(value)/100.0); } );
     connect(ui->nightLightSlider, &QSlider::valueChanged,
-            [this](int value) { scene().setNightScale(float(value)/100.0); } );
+            [this](int value) { scene().moveGround(QVector2D(float(value)/100.0,0)); } );
     connect(ui->blendExpSlider, &QSlider::valueChanged,
             [this](int value) { scene().setBlendExponent(float(value)/100.0); } );
     connect(ui->animationCheckbox, &QCheckBox::stateChanged,

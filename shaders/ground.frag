@@ -44,6 +44,7 @@ struct SurfaceMaterial {
     sampler2D grassTexture;
     sampler2D gravelTexture;
     sampler2D sandTexture;
+    sampler2D stoneTexture;
 
 };
 uniform SurfaceMaterial surface;
@@ -60,6 +61,8 @@ struct DisplacementMaterial {
 };
 uniform DisplacementMaterial displacement;
 
+uniform vec2 translation;
+
 // more uniforms
 uniform mat4 modelViewMatrix;
 uniform mat4  projectionMatrix;
@@ -72,13 +75,18 @@ uniform vec3  ambientLightIntensity;
 
 vec3 surfaceshader(vec3 n, vec3 v, vec3 l, vec2 uv) {
 
-    uv *= 3;
+
+    //return vec3(n.z);
+
+    uv += translation;
+    uv *= 30;
 
     // texture lookups
-    vec3 grassCol = texture(surface.grassTexture, uv).rgb;
-    vec3 gravelCol = texture(surface.gravelTexture, uv).rgb;
+    vec3 grassCol = texture(surface.grassTexture, uv*10).rgb;
+    vec3 gravelCol = texture(surface.gravelTexture, vec2(uv.x, uv.y*(3888/2592))).rgb;
     vec3 sandCol = texture(surface.sandTexture, uv).rgb;
     vec3 snowCol = vec3(1,1,1);
+    vec3 stoneCol = texture(surface.stoneTexture, vec2(uv.x, uv.y*(2400/1600))*1.5).rgb;
 
     // cosine of angle between light and surface normal.
     float ndotl = dot(n,l);
@@ -92,36 +100,44 @@ vec3 surfaceshader(vec3 n, vec3 v, vec3 l, vec2 uv) {
                    ambientLightIntensity * debugFactor;
 
     // surface back-facing to light?
-    if(ndotl<=0.0)
+    if(ndotl<=0.0){
         return ambient;
-    else
+    }
+    else{
         ndotl = max(ndotl, 0.0);
+    }
 
     // diffuse contribution
-    vec3 diffuseCoeff = gravelCol;
+    vec3 diffuseCoeff = sandCol;
 //     : phong.k_diffuse
 
-    //heigth of a mountain
+    //heigth of this fragment
     float height = (inverse(modelViewMatrix) * position_EC).y;
 
-    if(height > 0.15){
+    //steepness
+    float steepness = n.z;
+
+    if(height > 0.15 && steepness > 0.6){
         diffuseCoeff = snowCol;
+    }else{
+        if(steepness < 0.5){
+            if(height*pow(steepness,2) > 0.008){
+                diffuseCoeff = stoneCol;
+            }else{
+                diffuseCoeff = gravelCol;
+            }
+        }else{
+            diffuseCoeff = grassCol;
+        }
     }
+
+
+
 
     // clouds at day?
 //        diffuseCoeff = (1.0-cloudDensity)*diffuseCoeff + cloudDensity*vec3(1.5,1.5,1.5);
     // final diffuse term for daytime
     vec3 diffuse =  diffuseCoeff * light.intensity * ndotl;
-
-
-    // ambient part contains lights; modify depending on time of day
-//    ambient *= pow(1.0-ndotl,surface.night_blend_exp);
-
-     // reflected light direction = perfect reflection direction
-    vec3 r = reflect(-l,n);
-
-    // cosine of angle between reflection dir and viewing dir
-    float rdotv = max( dot(r,v), 0.0);
 
     // return sum of all contributions
     return ambient + diffuse;
@@ -136,7 +152,7 @@ vec3 decodeNormal(vec3 normal) {
 void main() {
 
     // default normal in tangent space is (0,0,1).
-    vec3 bumpValue = texture(bump.tex, texcoord_frag).xyz;
+    vec3 bumpValue = texture(bump.tex, texcoord_frag+translation).xyz;
 
     // get bump direction (in tangent space) from bump texture
     vec3 N = decodeNormal(bumpValue);

@@ -17,12 +17,17 @@ void GroundMaterial::apply(unsigned int light_pass)
     surfaces.gravelTexture->bind(1);
     prog_->setUniformValue("surface.sandTexture", 2);
     surfaces.sandTexture->bind(2);
+    prog_->setUniformValue("surface.stoneTexture", 2);
+    surfaces.stoneTexture->bind(2);
 
     // bump & displacement mapping
     prog_->setUniformValue("bump.scale", bump.scale);
-    prog_->setUniformValue("bump.tex", 3); bump.tex->bind(3);
+    prog_->setUniformValue("bump.tex", 4); bump.tex->bind(4);
     prog_->setUniformValue("displacement.scale", displacement.scale);
-    prog_->setUniformValue("displacement.tex", 4); displacement.tex->bind(4);
+    prog_->setUniformValue("displacement.tex", 5); displacement.tex->bind(5);
+
+    //movement of the texture
+    prog_->setUniformValue("translation", translation);
 
 }
 
