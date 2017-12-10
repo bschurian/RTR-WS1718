@@ -173,7 +173,7 @@ void Scene::makeScene()
 
     // light attached to camera, placed right above camera
     nodes_["Camera"]->children.push_back(nodes_["Light0"]);
-    nodes_["Light0"]->transformation.translate(QVector3D(10, 0, 0));
+    nodes_["Light0"]->transformation.translate(QVector3D(3, 10, 0));
 
 }
 

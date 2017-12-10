@@ -101,7 +101,7 @@ vec3 surfaceshader(vec3 n, vec3 v, vec3 l, vec2 uv) {
 
     // surface back-facing to light?
     if(ndotl<=0.0){
-        //return ambient;
+        return ambient;
     }
     else{
         ndotl = max(ndotl, 0.0);
@@ -121,7 +121,7 @@ vec3 surfaceshader(vec3 n, vec3 v, vec3 l, vec2 uv) {
         diffuseCoeff = snowCol;
     }else{
         if(steepness < 0.5){
-            if(height*pow(steepness,2) > 0.007){
+            if(height*pow(steepness,2) > 0.008){
                 diffuseCoeff = stoneCol;
             }else{
                 diffuseCoeff = gravelCol;
@@ -137,7 +137,7 @@ vec3 surfaceshader(vec3 n, vec3 v, vec3 l, vec2 uv) {
     // clouds at day?
 //        diffuseCoeff = (1.0-cloudDensity)*diffuseCoeff + cloudDensity*vec3(1.5,1.5,1.5);
     // final diffuse term for daytime
-    vec3 diffuse =  diffuseCoeff * light.intensity;// * ndotl;
+    vec3 diffuse =  diffuseCoeff * light.intensity * ndotl;
 
     // return sum of all contributions
     return ambient + diffuse;
