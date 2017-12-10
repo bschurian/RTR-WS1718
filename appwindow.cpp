@@ -173,3 +173,13 @@ void AppWindow::keyPressEvent(QKeyEvent *event)
     scene().keyPressEvent(event);
 
 }
+
+void AppWindow::keyReleaseEvent(QKeyEvent *event)
+{
+    assert(event);
+
+    // pass on all events to the scene
+    scene().keyPressEvent(event);
+}
+
+

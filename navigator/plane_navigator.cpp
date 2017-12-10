@@ -34,6 +34,7 @@ void PlaneNavigator::keyPressEvent(QKeyEvent *event)
 
 void PlaneNavigator::keyReleaseEvent(QKeyEvent *event)
 {
+    qDebug() << "RELEASE_plane";
     switch(event->key()) { //Set to no more change when released
         case Qt::Key_Up:
             speedarr[0] = 0;

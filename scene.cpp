@@ -50,7 +50,7 @@ Scene::Scene(QWidget* parent, QOpenGLContext *context) :
 
     // initialize navigation controllers
     cameraNavigator_ = std::make_unique<RotateY>(nodes_["Camera"], nullptr, nullptr);
-    cameraNavigator_->setDistance(5.0);
+    cameraNavigator_->setDistance(1.0);
     lightNavigator_ = std::make_unique<PositionNavigator>(nodes_["Light0"], nodes_["World"], nodes_["Camera"]);
     planeNavigator_ = std::make_unique<PlaneNavigator>(nodes_["Rect"], nodes_["World"], nodes_["Camera"]);
 
@@ -177,6 +177,7 @@ void Scene::makeScene()
     nodes_["Camera"]->children.push_back(nodes_["Light0"]);
     nodes_["Light0"]->transformation.translate(QVector3D(3, 10, 0));
 
+
 }
 
 void Scene::setShader(QString txt)
@@ -302,6 +303,10 @@ void Scene::draw()
     // set time uniform in animated shader(s)
     float t = millisec_since_first_draw.count() / 1000.0f;
     planetMaterial_->time = t; // TODO not consistent with rtrApp
+
+    //plane move texture
+    if(plane_started)
+        refreshTexture();
 
     draw_scene_();
 }
@@ -444,7 +449,6 @@ void Scene::setSceneNode(QString node)
 void Scene::moveGround(QVector2D movement)
 {
     groundMaterial_->translation += movement;
-    update();
 }
 
 // pass key/mouse events on to navigator objects
@@ -481,10 +485,6 @@ void Scene::wheelEvent(QWheelEvent *)
 // trigger a redraw of the widget through this method
 void Scene::update()
 {
-    qDebug() << "plane_started: " << plane_started;
-    if(plane_started)
-        refreshTexture();
-
     parent_->update();
 }
 
