@@ -20,5 +20,11 @@
         <file>textures/noiseNorm.png</file>
         <file>textures/stone.jpg</file>
         <file>textures/skybox_texture.jpg</file>
+        <file>textures/siege_bk.png</file>
+        <file>textures/siege_dn.png</file>
+        <file>textures/siege_ft.png</file>
+        <file>textures/siege_lf.png</file>
+        <file>textures/siege_rt.png</file>
+        <file>textures/siege_up.png</file>
     </qresource>
 </RCC>

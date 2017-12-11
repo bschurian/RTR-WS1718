@@ -14,24 +14,29 @@ in vec3 viewDir_TS;
 in vec3 lightDir_TS;
 
 // tex coords - just copied
-in vec2 texcoord_frag;
+in vec3 texcoord_frag;
 
-uniform sampler2D skybox;
+uniform samplerCube sky;
 
 // output: color
 out vec4 outColor;
 
 // more uniforms
 uniform mat4 modelViewMatrix;
+uniform mat4 viewMatrix;
 uniform mat4  projectionMatrix;
 uniform float time;
 uniform vec3  ambientLightIntensity;
 
 void main() {
 
-    // default normal in tangent space is (0,0,1).
-    vec3 skyCol = texture(skybox, texcoord_frag+translation).xyz;
+    vec3 viewdirEC  = (vec4(0,0,0,1) - position_EC).xyz;
+
+    vec3 reflEC = reflect(-viewdirEC, normal_EC);
+    vec3 reflWC = (inverse(viewMatrix) * vec4(reflEC, 0.0)).xyz;
+    vec3 c_mirror = texture(sky, reflWC).rgb;
+//    c_mirror = texture(sky, texcoord_frag).rgb;
     
     // set fragment color
-    outColor = vec4(skyCol, 1.0);
+    outColor = vec4(c_mirror, 1.0);
 }

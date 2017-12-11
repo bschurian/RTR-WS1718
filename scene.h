@@ -14,7 +14,7 @@
 #include "material/phong.h"
 #include "material/planet.h"
 #include "material/ground.h"
-#include "material/cubemapping.h"
+#include "material/ground_kopie.h"
 #include "material/vectors.h"
 #include "material/wireframe.h"
 
@@ -23,6 +23,7 @@
 #include "navigator/plane_navigator.h"
 
 #include <memory> // std::unique_ptr
+#include <array>  //std::array
 #include <map>    // std::map
 #include <chrono> // clock, time calculations
 
@@ -124,6 +125,10 @@ public slots:
     // adjust camera / viewport / ... if drawing surface changes
     void updateViewport(size_t width, size_t height);
 
+    // helper for creating a cube tex
+    std::shared_ptr<QOpenGLTexture> makeCubeMap(std::string path_to_images, std::array<std::string, 6> sides);
+    //{return std::make_shared<QOpenGLTexture>(QImage(":/textures/stone.jpg").mirrored());}
+
 protected:
 
     // draw the actual scene
@@ -154,7 +159,7 @@ protected:
     std::shared_ptr<PhongMaterial> material_;
     std::shared_ptr<PlanetMaterial> planetMaterial_;
     std::shared_ptr<GroundMaterial> groundMaterial_;
-    std::shared_ptr<CubeMappingMaterial> skyBoxMaterial_;
+    std::shared_ptr<SkyBoxMaterial> skyBoxMaterial_;
     std::shared_ptr<WireframeMaterial> wireframeMaterial_;
     std::shared_ptr<VectorsMaterial> vectorsMaterial_;
 
