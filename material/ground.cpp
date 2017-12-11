@@ -10,7 +10,7 @@ void GroundMaterial::apply(unsigned int light_pass)
     // first set all the uniforms for Phong general material
     PhongMaterial::apply(light_pass);
 
-    // Planet textures
+    // Ground textures
     prog_->setUniformValue("surface.grassTexture", 0);
     surfaces.grassTexture->bind(0);
     prog_->setUniformValue("surface.gravelTexture", 1);
@@ -19,6 +19,10 @@ void GroundMaterial::apply(unsigned int light_pass)
     surfaces.sandTexture->bind(2);
     prog_->setUniformValue("surface.stoneTexture", 2);
     surfaces.stoneTexture->bind(2);
+
+    // Fog params
+    prog_->setUniformValue("fog.start", fog.start);
+    prog_->setUniformValue("fog.end", fog.end);
 
     // bump & displacement mapping
     prog_->setUniformValue("bump.scale", bump.scale);

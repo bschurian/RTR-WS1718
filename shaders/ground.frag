@@ -61,6 +61,12 @@ struct DisplacementMaterial {
 };
 uniform DisplacementMaterial displacement;
 
+struct Fog {
+    float start;
+    float end;
+};
+uniform Fog fog ;
+
 uniform vec2 translation;
 
 // more uniforms
@@ -160,8 +166,16 @@ void main() {
     vec3 L = normalize(lightDir_TS);
 
     // calculate color using diffuse illumination
-    vec3 color = surfaceshader(N, V, L, texcoord_frag);
+    vec3 color;
+    //fog
+    vec3 gray = vec3(0.7);
+    float fogFactor = (fog.end - position_EC.z)/(fog.end-fog.start);
+    if(fogFactor <= 0.0){
+        color = vec3(0.7); //gray
+    }else{
+        color = mix(surfaceshader(N, V, L, texcoord_frag), gray, fogFactor);
+    }
     
     // set fragment color
-    outColor = vec4(color, 1.0);
+    outColor = vec4(fogFactor, fogFactor, fogFactor, 1.0);
 }

@@ -35,7 +35,9 @@ void main() {
     vec3 reflEC = reflect(-viewdirEC, normal_EC);
     vec3 reflWC = (inverse(viewMatrix) * vec4(reflEC, 0.0)).xyz;
     vec3 c_mirror = texture(sky, reflWC).rgb;
-//    c_mirror = texture(sky, texcoord_frag).rgb;
+    //c_mirror = texture(sky, texcoord_frag).rgb;
+
+    vec3 gray = vec3(1, 0, 0);
     
     // set fragment color
     outColor = vec4(c_mirror, 1.0);

@@ -22,6 +22,12 @@ public:
         std::shared_ptr<QOpenGLTexture> stoneTexture;
     } surfaces;
 
+    // fog
+    struct Fog {
+        float start = 0;
+        float end = 200;
+    } fog;
+
     // bump mapping
     struct Bump {
         float scale = 1.0;
