@@ -96,7 +96,6 @@ void Scene::makeNodes()
     auto gravel      = std::make_shared<QOpenGLTexture>(QImage(":/textures/geroell.jpg").mirrored());
     auto sand        = std::make_shared<QOpenGLTexture>(QImage(":/textures/sand.jpg").mirrored());
     auto stone       = std::make_shared<QOpenGLTexture>(QImage(":/textures/stone.jpg").mirrored());
-    stone = std::make_shared<QOpenGLTexture>(QImage(":/textures/siege_bk.png").mirrored());
 
     // tex parameters
     clouds->setWrapMode(QOpenGLTexture::DirectionS, QOpenGLTexture::Repeat);
@@ -178,7 +177,7 @@ void Scene::makeScene()
     skyBoxMaterial_->sky = makeCubeMap(":/textures", file_names);
 
     nodes_["SkyBox"] = createNode(std::make_shared<Mesh>(make_shared<geom::Cube>(), skyBoxMaterial_), false);
-    nodes_["SkyBox"]->transformation.scale(QVector3D(100, 100, 100));
+    nodes_["SkyBox"]->transformation.scale(QVector3D(10, 10, 10));
     nodes_["SkyBox"]->transformation.scale(QVector3D(-1, -1, -1));
     nodes_["World"]->children.push_back(nodes_["SkyBox"]);
 
@@ -191,8 +190,8 @@ void Scene::makeScene()
     lightNodes_.push_back(nodes_["Light0"]);
 
     // light attached to camera, placed right above camera
-    nodes_["Camera"]->children.push_back(nodes_["Light0"]);
-    nodes_["Light0"]->transformation.translate(QVector3D(10, 0, 0));
+    nodes_["World"]->children.push_back(nodes_["Light0"]);
+    nodes_["Light0"]->transformation.translate(QVector3D(0, 10, 0));
 
 
 }

@@ -24,8 +24,8 @@ public:
 
     // fog
     struct Fog {
-        float start = 0;
-        float end = 200;
+        float start = 200;
+        float end = 20000;
     } fog;
 
     // bump mapping

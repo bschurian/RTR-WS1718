@@ -89,8 +89,8 @@ public slots:
         planetMaterial_->displacement.use = flag; update();
     }
     void setDisplacementMapScale(float v) {
-        groundMaterial_->displacement.scale = v/100 * 80;
-        vectorsMaterial_->displacement.scale = v/100 * 80; update();
+        groundMaterial_->displacement.scale = v/100 * 20;
+        vectorsMaterial_->displacement.scale = v/100 * 20; update();
     }
     void toggleWireframe(bool flag)  {
         showWireframe = flag; update();

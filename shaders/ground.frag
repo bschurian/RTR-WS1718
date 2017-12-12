@@ -170,12 +170,13 @@ void main() {
     //fog
     vec3 gray = vec3(0.7);
     float fogFactor = (fog.end - position_EC.z)/(fog.end-fog.start);
-    if(fogFactor <= 0.0){
-        color = vec3(0.7); //gray
-    }else{
-        color = mix(surfaceshader(N, V, L, texcoord_frag), gray, fogFactor);
-    }
+    //if(fogFactor <= 0.0){
+      //  color = vec3(0.7); //gray
+    //}else{
+        color = //mix(surfaceshader(N, V, L, texcoord_frag), gray, fogFactor);
+                surfaceshader(N, V, L, texcoord_frag);
+    //}
     
     // set fragment color
-    outColor = vec4(fogFactor, fogFactor, fogFactor, 1.0);
+    outColor = vec4(color, 1.0);
 }
