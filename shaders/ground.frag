@@ -89,7 +89,7 @@ vec3 surfaceshader(vec3 n, vec3 v, vec3 l, vec2 uv) {
 
     // texture lookups
     vec3 grassCol = texture(surface.grassTexture, uv*10).rgb;
-    vec3 gravelCol = texture(surface.gravelTexture, vec2(uv.x, uv.y*(3888/2592))).rgb;
+    vec3 gravelCol = texture(surface.gravelTexture, vec2(uv.x, uv.y*(3888/2592))*3).rgb;
     vec3 sandCol = texture(surface.sandTexture, uv).rgb;
     vec3 snowCol = vec3(1,1,1);
     vec3 stoneCol = texture(surface.stoneTexture, vec2(uv.x, uv.y*(2400/1600))*1.5).rgb;
@@ -135,13 +135,23 @@ vec3 surfaceshader(vec3 n, vec3 v, vec3 l, vec2 uv) {
         }else{
             diffuseCoeff = grassCol;
         }
+//        diffuseCoeff = vec3(min(1.0, pow(steepness,8)*10));
+        diffuseCoeff = vec3(
+                    min(1,
+                            pow(
+                                pow((0.15-height)*(1/0.15), 2)*(1-pow((0.5-steepness)*2, 4)*3)
+                            , 1) * 3
+                        )
+                    );
+//        diffuseCoeff = vec3(pow(1-abs(0.5-steepness)*2, 10));
+//        return diffuseCoeff;
+        diffuseCoeff = mix(mix(stoneCol, gravelCol,min(1,
+                                                       pow(
+                                                           pow((0.15-height)*(1/0.15), 2)*(1-pow((0.5-steepness)*2, 4)*3)
+                                                       , 1) * 3
+                                                   )), grassCol, min(1.0, pow(steepness,8)*10));
     }
 
-
-
-
-    // clouds at day?
-//        diffuseCoeff = (1.0-cloudDensity)*diffuseCoeff + cloudDensity*vec3(1.5,1.5,1.5);
     // final diffuse term for daytime
     vec3 diffuse =  diffuseCoeff * light.intensity * ndotl;
 
