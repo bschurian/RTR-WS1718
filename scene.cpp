@@ -171,14 +171,13 @@ void Scene::makeScene()
     skyBoxMaterial_ = std::make_shared<SkyBoxMaterial>(skybox_prog);
     auto skyFront       = std::make_shared<QOpenGLTexture>(QImage(":/textures/siege_bft.tga").mirrored());
     std::array<string, 6> file_names =
-    {"siege_rt.png","siege_up.png","siege_bk.png",
-      "siege_lf.png", "siege_dn.png", "siege_ft.png"};
+    {"real_dayrt.jpg","real_dayup.jpg","real_daybk.jpg",
+      "real_daylf.jpg", "real_daydn.jpg", "real_dayft.jpg"};
 
     skyBoxMaterial_->sky = makeCubeMap(":/textures", file_names);
 
     nodes_["SkyBox"] = createNode(std::make_shared<Mesh>(make_shared<geom::Cube>(), skyBoxMaterial_), false);
     nodes_["SkyBox"]->transformation.scale(QVector3D(10, 10, 10));
-    nodes_["SkyBox"]->transformation.scale(QVector3D(-1, -1, -1));
     nodes_["World"]->children.push_back(nodes_["SkyBox"]);
 
     // add camera node

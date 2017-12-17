@@ -19,12 +19,11 @@
         <file>textures/noise.png</file>
         <file>textures/noiseNorm.png</file>
         <file>textures/stone.jpg</file>
-        <file>textures/skybox_texture.jpg</file>
-        <file>textures/siege_bk.png</file>
-        <file>textures/siege_dn.png</file>
-        <file>textures/siege_ft.png</file>
-        <file>textures/siege_lf.png</file>
-        <file>textures/siege_rt.png</file>
-        <file>textures/siege_up.png</file>
+        <file>textures/real_daybk.jpg</file>
+        <file>textures/real_daydn.jpg</file>
+        <file>textures/real_dayft.jpg</file>
+        <file>textures/real_daylf.jpg</file>
+        <file>textures/real_dayrt.jpg</file>
+        <file>textures/real_dayup.jpg</file>
     </qresource>
 </RCC>
