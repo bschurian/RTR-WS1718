@@ -179,7 +179,7 @@ void AppWindow::keyReleaseEvent(QKeyEvent *event)
     assert(event);
 
     // pass on all events to the scene
-    scene().keyPressEvent(event);
+    scene().keyReleaseEvent(event);
 }
 
 
