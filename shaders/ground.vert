@@ -47,6 +47,11 @@ out vec3 lightDir_TS;
 // tex coords - just copied
 out vec2 texcoord_frag;
 
+// fog
+out float visibility;
+const float density = 3.7;
+const float gradient = 1.9;
+
 // displacement mapping
 vec4 displace(vec4 pos) {
 
@@ -100,6 +105,12 @@ void main(void) {
     mat3 TBN = mat3(wcTangent, wcBitangent, wcNormal);
     lightDir_TS = wcLightDir * TBN;
     viewDir_TS  = wcViewDir * TBN;
+
+    //fog
+    vec4 campos = viewMatrix * pos;
+    float distance = length(campos.xyz);
+    visibility = exp(-pow((distance*density),gradient));
+    visibility = clamp(visibility,0.0,1.0);
 
 }
 

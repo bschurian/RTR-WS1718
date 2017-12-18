@@ -28,6 +28,11 @@ out vec3 normal_EC;
 //skybox
 uniform samplerCube sky;
 
+// fog
+out float visibility;
+const float density = 3.7;
+const float gradient = 1.5;
+
 // tex coords - just copied
 out vec3 texcoord_frag;
 
@@ -45,6 +50,14 @@ void main(void) {
 
     // normal direction in eye coordinates
     normal_EC  = normalMatrix * normal_MC;
+
+
+    //fog
+    vec4 campos = viewMatrix * pos;
+    float distance = length(campos.xyz);
+    visibility = exp(-pow((distance*density),gradient));
+    visibility = clamp(visibility,0.0,1.0);
+
 
 }
 

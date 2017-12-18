@@ -181,8 +181,11 @@ protected:
     std::unique_ptr<PositionNavigator> lightNavigator_;
     std::unique_ptr<PlaneNavigator> planeNavigator_;
 
-    QVector3D planespeed = QVector3D(0.0,0.0,0.0);
+    QVector3D planespeed = QVector3D(0.0002f,0.0,0.0);
     bool plane_started = false;
+    QVector2D rotation_angle = QVector2D(0.0,0.0);
+    float elevation_angle_ = 15;
+    float rotation_speed_ = 5.0;
 
     // helper for creating programs from shader files
     std::shared_ptr<QOpenGLShaderProgram> createProgram(const std::string& vertex,

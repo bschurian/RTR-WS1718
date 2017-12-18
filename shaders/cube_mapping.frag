@@ -18,6 +18,10 @@ in vec3 texcoord_frag;
 
 uniform samplerCube sky;
 
+
+// fog
+in float visibility;
+
 // output: color
 out vec4 outColor;
 
@@ -37,8 +41,10 @@ void main() {
     vec3 c_mirror = texture(sky, reflWC).rgb;
     //c_mirror = texture(sky, texcoord_frag).rgb;
 
-    vec3 gray = vec3(1, 0, 0);
+    vec3 gray = vec3(0.9,0.9,0.9);
+    vec3 color = mix(gray,c_mirror, visibility);
+    //vec3 color = c_mirror;
     
     // set fragment color
-    outColor = vec4(c_mirror, 1.0);
+    outColor = vec4(color, 1.0);
 }

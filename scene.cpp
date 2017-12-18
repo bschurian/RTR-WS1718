@@ -50,11 +50,12 @@ Scene::Scene(QWidget* parent, QOpenGLContext *context) :
 
     // initialize navigation controllers
     cameraNavigator_ = std::make_unique<RotateY>(nodes_["Camera"], nullptr, nullptr);
-    cameraNavigator_->setDistance(1.0);
     lightNavigator_ = std::make_unique<PositionNavigator>(nodes_["Light0"], nodes_["World"], nodes_["Camera"]);
     planeNavigator_ = std::make_unique<PlaneNavigator>(nodes_["Rect"], nodes_["World"], nodes_["Camera"]);
+    cameraNavigator_->setDistance(0.55);
 
-    // make sure we redraw when the timer hits
+    // make sure we redraw every frame
+    timer_.start(0);
     connect(&timer_, SIGNAL(timeout()), this, SLOT(update()) );
 
 }
@@ -506,7 +507,16 @@ void Scene::setSceneNode(QString node)
 
 void Scene::moveGround(QVector2D movement)
 {
-    groundMaterial_->translation += movement;
+    QMatrix4x4 mat;
+
+    mat.translate(0, 0, 0.5);
+    mat.rotate(rotation_angle.x(), QVector3D(0,1,0));
+
+    nodes_["Camera"]->transformation.rotate(rotation_angle.x()*180/3.14159265359, QVector3D(0,1,0));
+    groundMaterial_->translation += QVector2D(movement.y(),movement.x());
+//    if(rotation_angle.x()!=0){
+//        nodes_["Camera"]->transformation = mat;
+//    }
 }
 
 // pass key/mouse events on to navigator objects
@@ -554,15 +564,21 @@ void Scene::updateViewport(size_t width, size_t height)
 void Scene::refreshTexture(){
     if(planeNavigator_->speedarr!=QVector3D(0,0,0)){
         if(planeNavigator_->speedarr.x()==1)
-            planespeed[0]+=0.0001f;
-        if(planeNavigator_->speedarr.x()==-1 && planespeed[0]>0.0001f)
-            planespeed[0]-=0.0001f;
+            planespeed[0]+=0.00001f;
+        if(planeNavigator_->speedarr.x()==-1 && planespeed[0]>0.0002f)
+            planespeed[0]-=0.00001f;
         if(planeNavigator_->speedarr.y()==1)
-            planespeed[1]+=0.0001f;
+        {
+            planespeed[1]+=0.00004f;
+            rotation_angle[0]+=0.00004f;
+        }
         if(planeNavigator_->speedarr.y()==-1)
-            planespeed[1]-=0.0001f;
+        {
+            planespeed[1]-=0.00004f;
+            rotation_angle[0]-=0.00004f;
+        }
     }
-    qDebug() << "X: " << planespeed.x() << "Y: " << planespeed.y();
+    qDebug() << "X: " << planespeed.x() << "Y: " << planespeed.y() << "rotationangle: " << rotation_angle.x();
     moveGround(QVector2D(planespeed.x(),planespeed.y()));
 }
 

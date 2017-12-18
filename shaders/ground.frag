@@ -16,6 +16,9 @@ in vec3 lightDir_TS;
 // tex coords - just copied
 in vec2 texcoord_frag;
 
+// fog
+in float visibility;
+
 // output: color
 out vec4 outColor;
 
@@ -178,13 +181,13 @@ void main() {
     // calculate color using diffuse illumination
     vec3 color;
     //fog
-    vec3 gray = vec3(0.7);
-    float fogFactor = (fog.end - position_EC.z)/(fog.end-fog.start);
+    vec3 gray = vec3(0.5,0.5,0.5);
+    //float fogFactor = (fog.end - position_EC.z)/(fog.end-fog.start);
     //if(fogFactor <= 0.0){
       //  color = vec3(0.7); //gray
     //}else{
-        color = //mix(surfaceshader(N, V, L, texcoord_frag), gray, fogFactor);
-                surfaceshader(N, V, L, texcoord_frag);
+        color = mix(gray,surfaceshader(N, V, L, texcoord_frag), visibility);
+                //surfaceshader(N, V, L, texcoord_frag);
     //}
     
     // set fragment color
