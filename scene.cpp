@@ -95,7 +95,7 @@ void Scene::makeNodes()
     auto grass       = std::make_shared<QOpenGLTexture>(QImage(":/textures/grass.jpg").mirrored());
     auto gravel      = std::make_shared<QOpenGLTexture>(QImage(":/textures/geroell.jpg").mirrored());
     auto sand        = std::make_shared<QOpenGLTexture>(QImage(":/textures/sand.jpg").mirrored());
-    auto stone        = std::make_shared<QOpenGLTexture>(QImage(":/textures/stone.jpg").mirrored());
+    auto stone       = std::make_shared<QOpenGLTexture>(QImage(":/textures/stone.jpg").mirrored());
 
     // tex parameters
     clouds->setWrapMode(QOpenGLTexture::DirectionS, QOpenGLTexture::Repeat);
@@ -165,6 +165,21 @@ void Scene::makeScene()
     nodes_["Scene"] = createNode(nullptr, false);
     nodes_["World"]->children.push_back(nodes_["Scene"]);
 
+    //create SkyBox
+    // load shader source files and compile them into OpenGL program objects
+    auto skybox_prog = createProgram(":/shaders/cube_mapping.vert", ":/shaders/cube_mapping.frag");
+    skyBoxMaterial_ = std::make_shared<SkyBoxMaterial>(skybox_prog);
+    auto skyFront       = std::make_shared<QOpenGLTexture>(QImage(":/textures/siege_bft.tga").mirrored());
+    std::array<string, 6> file_names =
+    {"real_dayrt.jpg","real_dayup.jpg","real_daybk.jpg",
+      "real_daylf.jpg", "real_daydn.jpg", "real_dayft.jpg"};
+
+    skyBoxMaterial_->sky = makeCubeMap(":/textures", file_names);
+
+    nodes_["SkyBox"] = createNode(std::make_shared<Mesh>(make_shared<geom::Cube>(), skyBoxMaterial_), false);
+    nodes_["SkyBox"]->transformation.scale(QVector3D(10, 10, 10));
+    nodes_["World"]->children.push_back(nodes_["SkyBox"]);
+
     // add camera node
     nodes_["Camera"] = createNode(nullptr, false);
     nodes_["World"]->children.push_back(nodes_["Camera"]);
@@ -174,10 +189,53 @@ void Scene::makeScene()
     lightNodes_.push_back(nodes_["Light0"]);
 
     // light attached to camera, placed right above camera
-    nodes_["Camera"]->children.push_back(nodes_["Light0"]);
-    nodes_["Light0"]->transformation.translate(QVector3D(3, 10, 0));
+    nodes_["World"]->children.push_back(nodes_["Light0"]);
+    nodes_["Light0"]->transformation.translate(QVector3D(0, 10, 0));
 
 
+}
+
+
+std::shared_ptr<QOpenGLTexture>
+Scene::makeCubeMap(string path_to_images, std::array<string, 6> sides)
+{
+
+    //load six images for the six sides of the cube
+    std::vector<QImage> images;
+    for(auto side : sides){
+        QString filename = (path_to_images + "/" + side).c_str();
+        images.push_back( QImage(filename).
+                          convertToFormat(QImage::Format_RGBA8888));
+    }
+
+    //create and allocate cube map texture
+    std::shared_ptr<QOpenGLTexture> tex_;
+    tex_ =std::make_shared<QOpenGLTexture>(QOpenGLTexture::TargetCubeMap);
+    tex_->create();
+    tex_->setSize(images[0].width(), images[0].height(), images[0].depth());
+    tex_->setFormat(QOpenGLTexture::RGBA8_UNorm);
+    tex_->allocateStorage();
+
+    //the file names in array sides must match this of
+    std::array<QOpenGLTexture::CubeMapFace, 6> faces =
+    {{QOpenGLTexture::CubeMapPositiveX, QOpenGLTexture::CubeMapPositiveY,
+     QOpenGLTexture::CubeMapPositiveZ, QOpenGLTexture::CubeMapNegativeX,
+     QOpenGLTexture::CubeMapNegativeY, QOpenGLTexture::CubeMapNegativeZ}};
+
+    //set texture image data for each side
+    for(auto i : {0,1,2,3,4,5}){
+        tex_->setData( 0, 0, faces[i],
+                       QOpenGLTexture::RGBA, QOpenGLTexture::UInt8,
+                       (const void*)images[i].constBits(), 0);
+    }
+
+    // texture parameters and mip-map generation
+    tex_->setWrapMode(QOpenGLTexture::ClampToEdge);
+    tex_->setMagnificationFilter(QOpenGLTexture::Linear);
+    tex_->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    tex_->generateMipMaps();
+
+    return tex_;
 }
 
 void Scene::setShader(QString txt)

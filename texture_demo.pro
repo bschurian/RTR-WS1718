@@ -31,7 +31,8 @@ HEADERS      += \
     material/vectors.h \
     geometry/parametric.h \
     material/ground.h \
-    navigator/plane_navigator.h
+    navigator/plane_navigator.h \
+    material/ground_kopie.h
 
 # C++ SOURCE FILES TO BE COMPILED AND LINKED TOGETHER
 SOURCES      += \
@@ -57,7 +58,8 @@ SOURCES      += \
     material/vectors.cpp \
     geometry/parametric.cpp \
     material/ground.cpp \
-    navigator/plane_navigator.cpp
+    navigator/plane_navigator.cpp \
+    material/ground_kopie.cpp
 
 # RESOURCE FILES TO BE PROCESSED BY QT
 RESOURCES    += \
