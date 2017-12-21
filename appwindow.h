@@ -4,6 +4,8 @@
 #include <QSettings>
 
 #include "scene.h"
+#include "imagedisplaybutton.h"
+
 
 namespace Ui {
 class AppWindow;
@@ -13,7 +15,7 @@ class AppWindow;
  *   RTR demo App, AppWindow
  *   Author: Hartmut Schirmacher
  *
- *   The AppWindow holds the GUI of the application that has been created
+ *   The AppWindow wraps the GUI of the application that has been created
  *   and can be edited in Qt UI designer.
  *
  *   It consists of an OpenGL Widget for rendering the OpenGL Scene,
@@ -39,15 +41,20 @@ public slots:
 
     /* show buttons etc, and a border around the OpenGL widget */
     void showUI();
+
     /* hide all buttons etc, and remove border around the OpenGL widget */
     void hideUI();
 
     /* process app-wide key events and trigger respective actions in UI or in the scene */
     void keyPressEvent(QKeyEvent *event) override;
-    void keyReleaseEvent(QKeyEvent *event) override;
 
-    /* set default values for the UI widgets. must only be called AFTER constructor */
+    /* set default values for the UI widgets.
+     * must only be called AFTER constructor, after scene has been instantiated. */
     void setDefaultUIValues();
+
+    /* display frame buffer (FBO) contents as images in the UI */
+    void displayBufferContents(unsigned int id, QString label, const QImage& img);
+    void hideBufferContents();
 
 protected:
 
@@ -68,5 +75,9 @@ private:
 
     // this is where the app remembers its settings, i.e. window size
     QSettings settings_;
+
+    // buttons/thumbnails for displaying FBO contents
+    std::map<int,ImageDisplayButton*> buttons_;
+
 };
 

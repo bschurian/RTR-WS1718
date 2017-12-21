@@ -9,6 +9,8 @@
 #include <QApplication>
 #include <QKeyEvent>
 #include <QDesktopWidget>
+#include <QDialog>
+#include <QVBoxLayout>
 
 #include "appwindow.h"
 #include "ui_appwindow.h"
@@ -44,71 +46,139 @@ AppWindow::AppWindow(QWidget *parent) :
     // when last window closes, quit
     connect(qApp, &QGuiApplication::lastWindowClosed, []{ qApp->quit(); });
 
-    // combo box to change the model
-    connect(ui->modelComboBox, &QComboBox::currentTextChanged,
-            [this](const QString& txt) { scene().setSceneNode(txt);
-    } );
-
-    // combo box to change the shader
-    connect(ui->shaderComboBox, &QComboBox::currentTextChanged, [this](const QString& txt) {
-        scene().setShader(txt);
-        if(txt == "+Clouds")
-            ui->animationCheckbox->setVisible(true);
-        else
-            ui->animationCheckbox->setVisible(false);
-
-    } );
-
-    // main shader parameters
+    // pass 1
     connect(ui->blackBgRadioButton, &QRadioButton::clicked,
             [this](bool) { scene().setBackgroundColor(QVector3D(0,0,0)); } );
     connect(ui->greyBgRadioButton, &QRadioButton::clicked,
             [this](bool) { scene().setBackgroundColor(QVector3D(0.4f,0.4f,0.4f)); } );
     connect(ui->whiteBgRadioButton, &QRadioButton::clicked,
             [this](bool) { scene().setBackgroundColor(QVector3D(1,1,1)); } );
-    connect(ui->sunlightSlider, &QSlider::valueChanged,
+    connect(ui->light0Slider, &QSlider::valueChanged,
             [this](int value) { scene().setLightIntensity(0, float(value)/100.0); } );
-    connect(ui->nightLightSlider, &QSlider::valueChanged,
-            [this](int value) { scene().moveGround(QVector2D(float(value)/100.0,0)); } );
-    connect(ui->blendExpSlider, &QSlider::valueChanged,
-            [this](int value) { scene().setBlendExponent(float(value)/100.0); } );
-    connect(ui->animationCheckbox, &QCheckBox::stateChanged,
-            [this](bool onOrOff) { scene().toggleAnimation(onOrOff); } );
-    connect(ui->bumpMapCheckbox, &QCheckBox::stateChanged,
-            [this](bool onOrOff) { scene().toggleBumpMapping(onOrOff); } );
-    connect(ui->dispMapCheckBox, &QCheckBox::stateChanged,
-            [this](bool onOrOff) { scene().toggleDisplacementMapping(onOrOff); } );
-    connect(ui->bumpMapSlider, &QSlider::valueChanged,
-            [this](int value) { scene().setBumpMapScale(float(value)/100.0); } );
-    connect(ui->dispMapSlider, &QSlider::valueChanged,
-            [this](int value) { scene().setDisplacementMapScale(float(value)/100.0); } );
+    connect(ui->modelComboBox, &QComboBox::currentTextChanged,
+            [this](QString value) { scene().setSceneNode(value); } );
 
-    // wireframe / vector shaders
-    connect(ui->wireframeCheckBox, &QCheckBox::stateChanged,
-            [this](bool onOrOff) { scene().toggleWireframe(onOrOff); } );
-    connect(ui->vectorScaleSlider, &QSlider::valueChanged,
-            [this](int value) { scene().setVectorScale(float(value)/100.0); } );
+    connect(ui->ambientSlider, &QSlider::valueChanged,
+            [this](int value) { scene().setAmbientScale(float(value)/20.0); } );
+    connect(ui->diffuseSlider, &QSlider::valueChanged,
+            [this](int value) { scene().setDiffuseScale(float(value)/20.0); } );
+    connect(ui->specularSlider, &QSlider::valueChanged,
+            [this](int value) { scene().setSpecularScale(float(value)/20.0); } );
+    connect(ui->shininessSlider, &QSlider::valueChanged,
+            [this](int value) { scene().setShininess(float(value)); } );
+    connect(ui->envMapCheckbox, &QCheckBox::toggled,
+            [this](bool value) { scene().toggleEnvMap(value); } );
+    connect(ui->mirrorSlider, &QSlider::valueChanged,
+            [this](int value) { scene().setMirrorScale(float(value)/20.0); } );
+    connect(ui->refractSlider, &QSlider::valueChanged,
+            [this](int value) { scene().setRefractScale(float(value)/20.0); } );
+    connect(ui->refractRatioSlider, &QSlider::valueChanged,
+            [this](int value) { scene().setRefractRatio(float(value)/50.0); } );
+#if 0
+    connect(ui->skyBoxToggle, &QCheckBox::toggled,
+            [this](bool value) { scene().toggleSkyBox(value); } );
+    connect(ui->skylightSlider, &QSlider::valueChanged,
+            [this](int value) { scene().setSkylightScale(float(value)/20.0); } );
+#endif
 
-    // from Stack overflow, syntax is ... great ...
-    connect(ui->vectorsGroup, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked),
-            [this](int which) {
-        scene().visualizeVectors(which);
-    });
+    // post processing parameters -------------------------------
+    connect(ui->postFilterComboBox, &QComboBox::currentTextChanged,
+            [this](QString value) {
+        if(value == "Blur") {
+            hideBufferContents();
+            ui->post_kernel_size->setEnabled(true);
+            scene().useSimpleBlur();
+        } else if(value == "2-Pass 9x9 Gauss") {
+            scene().useTwoPassGauss();
+            hideBufferContents();
+            ui->post_kernel_size->setDisabled(true);
+        }
+    } );
+    connect(ui->splitScreenCheckbox, &QCheckBox::toggled,
+            [this](bool value) { scene().toggleSplitDisplay(value); } );
+    connect(ui->showFBOtoggle, &QCheckBox::toggled,
+            [this](bool value) {
+        scene().toggleFBODisplay(value);
+        if(!value)
+            hideBufferContents();
+    } );
+    connect(ui->jitterCheckbox, &QCheckBox::toggled,[this](bool value){ scene().toggleJittering(value); });
+
+    // strange cast here: see https://stackoverflow.com/questions/16794695/connecting-overloaded-signals-and-slots-in-qt-5
+    connect(ui->post_kernel_size, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+            [this](int value) { scene().setPostFilterKernelSize(value); } );
 
 }
 
-// called when initially shown
+void AppWindow::displayBufferContents(unsigned int id, QString label, const QImage &img)
+{
+
+    qDebug() << "showing FBO, id = " << id;
+    auto pixmap = QPixmap::fromImage(img);
+
+    // do we have a layout yet, else create one
+    if(ui->fbo_area->layout() == nullptr)
+        ui->fbo_area->setLayout(new QVBoxLayout());
+
+    // if button for this ID already exists, update it; else create new
+    if(buttons_.find(id) == buttons_.end())
+        buttons_[id] = new ImageDisplayButton(this,pixmap,label);
+    else
+        buttons_[id]->update(pixmap, label);
+
+    // do we still need to add the button to the UI / layout
+    QVBoxLayout *layout = (QVBoxLayout*) ui->fbo_area->layout();
+    assert(int(id) <= layout->count());
+    if(layout->count()==int(id))
+        layout->addWidget(buttons_[id]);
+
+}
+
+void AppWindow::hideBufferContents()
+{
+    for(auto w : buttons_)
+        delete w.second;
+    buttons_.clear();
+    update();
+}
+
+// called when the window is initially shown
 void AppWindow::setDefaultUIValues() {
 
-    ui->animationCheckbox->hide();
-    ui->sunlightSlider->setValue(85.0);
-    ui->nightLightSlider->setValue(20.0);
-    ui->blendExpSlider->setValue(30.0);
-    ui->bumpMapSlider->setValue(100);
-    ui->dispMapSlider->setValue(100);
-    ui->vectorScaleSlider->setValue(10.0);
+    bool b = connect(&(this->scene()), &Scene::displayBufferContents,
+                     this, &AppWindow::displayBufferContents);
+    assert(b);
+
+    // the following commands will trigger signals that will
+    // result in scene methods being called. this can only
+    // be done after the scene has actually been instantiated.
+
+    // scene rendering parameters
+    ui->light0Slider->setValue(85.0);
+    ui->ambientSlider->setValue(20);
+    ui->diffuseSlider->setValue(20);
+    ui->specularSlider->setValue(0);
+    ui->shininessSlider->setValue(20);
+    ui->skyBoxToggle->setChecked(false);
+    ui->skylightSlider->setValue(20);
+    ui->mirrorSlider->setValue(20);
+    ui->refractSlider->setValue(0);
+    ui->refractRatioSlider->setValue(50);
+    ui->envMapCheckbox->setChecked(false);
     ui->greyBgRadioButton->setChecked(true);
-    ui->modelComboBox->setCurrentText("Rect");
+
+    // post processing parameters
+    // note: Qt will only trigger the actions if the value actually
+    // changes. As a workaround, we always change the value to one
+    // wrong value, and then the desired value :-(
+
+    // scene rendering parameters
+    ui->blackBgRadioButton->setChecked(true);
+    ui->greyBgRadioButton->setChecked(true);
+    ui->light0Slider->setValue(0);
+    ui->light0Slider->setValue(80);
+    ui->modelComboBox->setCurrentText("Cube");
+    ui->modelComboBox->setCurrentText("Duck");
 
 }
 
@@ -140,7 +210,7 @@ Scene &AppWindow::scene()
 void AppWindow::showUI()
 {
     ui->ui_container->show();
-    // default pixel margins (on Mac)
+    // default pixel margins
     ui->mainLayout->setContentsMargins(12,12,12,12);
 
 }
@@ -167,19 +237,9 @@ void AppWindow::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Q:
         close();
         return;
-    }
+
+    } // switch
 
     // pass on all other events to the scene
     scene().keyPressEvent(event);
-
 }
-
-void AppWindow::keyReleaseEvent(QKeyEvent *event)
-{
-    assert(event);
-
-    // pass on all events to the scene
-    scene().keyReleaseEvent(event);
-}
-
-
