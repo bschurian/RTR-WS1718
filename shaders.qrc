@@ -9,5 +9,6 @@
         <file>shaders/post.vert</file>
         <file>shaders/textured_phong.frag</file>
         <file>shaders/textured_phong.vert</file>
+        <file>shaders/blur2.frag</file>
     </qresource>
 </RCC>

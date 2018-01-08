@@ -88,6 +88,10 @@ void Scene::makeNodes()
                               ":/shaders/blur.frag");
     post_materials_["blur"] = make_shared<PostMaterial>(blur, 11);
 
+    auto blur2 = createProgram(":/shaders/post.vert",
+                               ":/shaders/blur2.frag");
+    post_materials_["blur2"] = make_shared<PostMaterial>(blur2, 13);
+
     auto gaussA = createProgram(":/shaders/post.vert",
                                 ":/shaders/gauss_9x9_passA.frag");
     auto gaussB = createProgram(":/shaders/post.vert",
@@ -112,6 +116,9 @@ void Scene::makeNodes()
     meshes_["blur"]      = std::make_shared<Mesh>(make_shared<geom::RectXY>(1, 1),
                                                   post_materials_["blur"]);
     nodes_["blur"]       = createNode(meshes_["blur"], false);
+    meshes_["blur2"]      = std::make_shared<Mesh>(make_shared<geom::RectXY>(1, 1),
+                                                  post_materials_["blur2"]);
+    nodes_["blur2"]       = createNode(meshes_["blur2"], false);
 
     meshes_["gauss_1"]   = std::make_shared<Mesh>(make_shared<geom::RectXY>(1, 1), post_materials_["gauss_1"]);
     nodes_ ["gauss_1"]   = createNode(meshes_["gauss_1"], false);
@@ -521,5 +528,27 @@ void Scene::update()
 void Scene::updateViewport(size_t width, size_t height)
 {
     glViewport(0,0,GLint(width),GLint(height));
+//    qDebug() << "++++++next tex unit after textured_phong";
+//    qDebug() << "++++++vp.w=" << width;
+//    if(!fbo1_) {
+//        qDebug() << "++++++ no fbo1";
+//    }else{
+
+//        // for high-res Retina displays
+//        auto pixel_scale = parent_->devicePixelRatio();
+
+//        // what kind of FBO do we want?
+//        auto fbo_format = QOpenGLFramebufferObjectFormat();
+//        fbo_format.setAttachment(QOpenGLFramebufferObject::Depth);
+
+//        // create some FBOs for post processing
+//        fbo1_ = std::make_shared<QOpenGLFramebufferObject>(parent_->width()*pixel_scale,
+//                                                           parent_->height()*pixel_scale,
+//                                                           fbo_format);
+//        fbo2_ = std::make_shared<QOpenGLFramebufferObject>(parent_->width()*pixel_scale,
+//                                                           parent_->height()*pixel_scale,
+//                                                           fbo_format);
+//        qDebug() << "++++++fbo1.w =" << fbo1_->size();
+//    }
 }
 
