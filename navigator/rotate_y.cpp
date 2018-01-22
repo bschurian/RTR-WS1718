@@ -75,8 +75,6 @@ void RotateY::updateTransformation_()
 {
     QMatrix4x4 mat;
 
-    // qDebug() << "navigator: dist=" << distance_to_center_ << " angle=" << rotation_angle_;
-
     // third, rotate around Y axis
     mat.rotate(rotation_angle_, QVector3D(0,1,0));
 
