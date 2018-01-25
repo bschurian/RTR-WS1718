@@ -143,14 +143,10 @@ Torus::Torus(float r1, float r2, size_t patches_u, size_t patches_v)
                          r2 * sin(t) );
     };
 
-    auto uv = [](float s, float t) -> QVector2D {
-        return QVector2D(s/(2*pi),0.5 + t/(2*pi));
-    };
-
     generate(QVector2D(0,0),
              QVector2D(2*pi, 2*pi),
              patches_u, patches_v,
-             pos, uv);
+             pos);
 
 }
 
@@ -168,6 +164,19 @@ Rect::Rect(size_t patches_u, size_t patches_v)
 
 }
 
+RectXY::RectXY(size_t patches_u, size_t patches_v)
+{
+
+    auto pos = [](float s, float t) -> QVector3D {
+        return QVector3D(-1 + s, -1 + t, 0 );
+    };
+
+    generate(QVector2D(0,0),
+             QVector2D(2,2),
+             patches_u, patches_v,
+             pos);
+
+}
 
 
 } // namespace geom

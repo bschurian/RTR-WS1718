@@ -64,4 +64,13 @@ public:
 
 };
 
+// rectangle in X-Y plane, from -1 to 1.
+class RectXY : public ParametricSurface {
+public:
+
+    // make unit rectangle in X-Z plane
+    RectXY(size_t patches_u, size_t patches_v);
+
+};
+
 } // namespace geom

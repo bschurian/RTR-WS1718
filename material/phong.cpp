@@ -3,8 +3,6 @@
 
 void PhongMaterial::apply(unsigned int light_pass)
 {
-    // qDebug() << "applying TexturedPhongMaterial";
-
     prog_->bind();
 
     // globals
