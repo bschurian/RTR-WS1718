@@ -3,6 +3,7 @@
         <file>models/duck/duck.obj</file>
         <file>models/teapot/teapot.obj</file>
         <file>models/goblin.obj</file>
+<<<<<<< HEAD
         <file>textures/RTR-ist-super-4-3.png</file>
         <file>textures/bridge2048/negx.jpg</file>
         <file>textures/bridge2048/negy.jpg</file>
@@ -10,5 +11,29 @@
         <file>textures/bridge2048/posx.jpg</file>
         <file>textures/bridge2048/posy.jpg</file>
         <file>textures/bridge2048/posz.jpg</file>
+=======
+        <file>models/trefoil.obj</file>
+        <file>models/dwarf/Dwarf_2_Low.obj</file>
+        <file>textures/earth_at_night_2048.jpg</file>
+        <file>textures/earth_bathymetry_2048.jpg</file>
+        <file>textures/earth_clouds_2048.jpg</file>
+        <file>textures/earth_day.jpg</file>
+        <file>textures/earth_topography_2048_NRM.png</file>
+        <file>textures/earth_topography_2048.jpg</file>
+        <file>textures/distortion.png</file>
+        <file>textures/normal.png</file>
+        <file>textures/geroell.jpg</file>
+        <file>textures/grass.jpg</file>
+        <file>textures/sand.jpg</file>
+        <file>textures/noise.png</file>
+        <file>textures/noiseNorm.png</file>
+        <file>textures/stone.jpg</file>
+        <file>textures/real_daybk.jpg</file>
+        <file>textures/real_daydn.jpg</file>
+        <file>textures/real_dayft.jpg</file>
+        <file>textures/real_daylf.jpg</file>
+        <file>textures/real_dayrt.jpg</file>
+        <file>textures/real_dayup.jpg</file>
+>>>>>>> e17cfa1db82653f3a745c7c5e9e922b04f381038
     </qresource>
 </RCC>
