@@ -30,7 +30,6 @@ public:
 
     /* methods to react on mouse/keyboard events */
     virtual void keyPressEvent(QKeyEvent *) {}
-    virtual void keyReleaseEvent(QKeyEvent *) {}
     virtual void mousePressEvent(QMouseEvent *) {}
     virtual void mouseMoveEvent(QMouseEvent *) {}
     virtual void mouseReleaseEvent(QMouseEvent *) {}

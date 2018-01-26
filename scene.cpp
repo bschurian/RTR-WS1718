@@ -51,26 +51,16 @@ Scene::Scene(QWidget* parent, QOpenGLContext *context) :
     lightNavigator_ = std::make_unique<PositionNavigator>(nodes_["Light0"], nodes_["World"], nodes_["Camera"]);
     cameraNavigator_ = std::make_unique<RotateY>(nodes_["Camera"], nodes_["World"], nodes_["Camera"]);
 
-<<<<<<< HEAD
     // move camera away from scene
     cameraNavigator_->setDistance(3.0);
-=======
-    // initialize navigation controllers
-    cameraNavigator_ = std::make_unique<RotateY>(nodes_["Camera"], nullptr, nullptr);
-    lightNavigator_ = std::make_unique<PositionNavigator>(nodes_["Light0"], nodes_["World"], nodes_["Camera"]);
-    planeNavigator_ = std::make_unique<PlaneNavigator>(nodes_["Rect"], nodes_["World"], nodes_["Camera"]);
-    cameraNavigator_->setDistance(0.55);
->>>>>>> e17cfa1db82653f3a745c7c5e9e922b04f381038
 
-    // make sure we redraw every frame
-    timer_.start(0);
+    // make sure we redraw when the timer hits
     connect(&timer_, SIGNAL(timeout()), this, SLOT(update()) );
 
 }
 
 void Scene::makeNodes()
 {
-<<<<<<< HEAD
     // load textures
     std::shared_ptr<QOpenGLTexture> cubetex = makeCubeMap(":/textures/bridge2048");
     std::shared_ptr<QOpenGLTexture> stdtex = std::make_shared<QOpenGLTexture>(QImage(":/textures/RTR-ist-super-4-3.png"));
@@ -115,83 +105,13 @@ void Scene::makeNodes()
                                 ":/shaders/gauss_9x9_passB.frag");
     post_materials_["gauss_1"] = make_shared<PostMaterial>(gaussA,11);
     post_materials_["gauss_2"] = make_shared<PostMaterial>(gaussB,12);
-=======
-    // load shader source files and compile them into OpenGL program objects
-    auto planet_prog = createProgram(":/shaders/planet_with_bumps.vert", ":/shaders/planet_with_bumps.frag");
-    planetMaterial_ = std::make_shared<PlanetMaterial>(planet_prog);
-    planetMaterial_->phong.shininess = 10;
-
-    auto ground_prog = createProgram(":/shaders/ground.vert", ":/shaders/ground.frag");
-    groundMaterial_ = std::make_shared<GroundMaterial>(ground_prog);
-    groundMaterial_->phong.shininess = 10;
-
-    // program (with additional geometry shader) to visualize wireframe
-    auto wire_prog = createProgram(":/shaders/wireframe.vert",
-                                   ":/shaders/wireframe.frag",
-                                   ":/shaders/wireframe.geom");
-    wireframeMaterial_ = std::make_shared<WireframeMaterial>(wire_prog);
-
-    // program (with additional geometry shader) to visualize normal/tangent vectors
-    auto vectors_prog = createProgram(":/shaders/vectors.vert",
-                                      ":/shaders/vectors.frag",
-                                      ":/shaders/vectors.geom");
-    vectorsMaterial_ = std::make_shared<VectorsMaterial>(vectors_prog);
-    vectorsMaterial_->vectorToShow  = 0;
-
-    // load textures
-    auto day    = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_day.jpg").mirrored());
-    auto night  = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_at_night_2048.jpg").mirrored());
-    auto gloss  = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_bathymetry_2048.jpg").mirrored());
-    auto clouds = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_clouds_2048.jpg").mirrored());
-    auto disp   = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_topography_2048.jpg").mirrored());
-    auto bumps  = std::make_shared<QOpenGLTexture>(QImage(":/textures/earth_topography_2048_NRM.png").mirrored());
-    auto groundDisp  = std::make_shared<QOpenGLTexture>(QImage(":/textures/noise.png").mirrored());
-    auto groundBump  = std::make_shared<QOpenGLTexture>(QImage(":/textures/noiseNorm.png").mirrored());
-    auto grass       = std::make_shared<QOpenGLTexture>(QImage(":/textures/grass.jpg").mirrored());
-    auto gravel      = std::make_shared<QOpenGLTexture>(QImage(":/textures/geroell.jpg").mirrored());
-    auto sand        = std::make_shared<QOpenGLTexture>(QImage(":/textures/sand.jpg").mirrored());
-    auto stone       = std::make_shared<QOpenGLTexture>(QImage(":/textures/stone.jpg").mirrored());
-
-    // tex parameters
-    clouds->setWrapMode(QOpenGLTexture::DirectionS, QOpenGLTexture::Repeat);
-    clouds->setWrapMode(QOpenGLTexture::DirectionT, QOpenGLTexture::Repeat);
-    groundDisp->setWrapMode(QOpenGLTexture::DirectionS, QOpenGLTexture::Repeat);
-    groundDisp->setWrapMode(QOpenGLTexture::DirectionT, QOpenGLTexture::Repeat);
-    groundBump->setWrapMode(QOpenGLTexture::DirectionS, QOpenGLTexture::Repeat);
-    groundBump->setWrapMode(QOpenGLTexture::DirectionT, QOpenGLTexture::Repeat);
-
-    // assign textures to material
-    planetMaterial_->planet.dayTexture = day;
-    planetMaterial_->planet.nightTexture = night;
-    planetMaterial_->planet.glossTexture = gloss;
-    planetMaterial_->planet.cloudsTexture = clouds;
-    planetMaterial_->bump.tex = bumps;
-    planetMaterial_->displacement.tex = disp;
->>>>>>> e17cfa1db82653f3a745c7c5e9e922b04f381038
-
-    // assign textures to material v2
-    groundMaterial_->phong.k_ambient = QVector3D(0.2f, 0.2f, 0.25f);
-    groundMaterial_->surfaces.grassTexture = grass;
-    groundMaterial_->surfaces.gravelTexture = gravel;
-    groundMaterial_->surfaces.sandTexture = sand;
-    groundMaterial_->surfaces.stoneTexture = stone;
-    groundMaterial_->bump.tex = groundBump;
-    groundMaterial_->displacement.tex = groundDisp;
-
-    vectorsMaterial_->bump.tex = groundBump;
-    vectorsMaterial_->displacement.tex = groundDisp;
 
     // load meshes from .obj files and assign shader programs to them
-<<<<<<< HEAD
-=======
-    auto std = groundMaterial_;
->>>>>>> e17cfa1db82653f3a745c7c5e9e922b04f381038
     meshes_["Duck"]    = std::make_shared<Mesh>(":/models/duck/duck.obj", std);
     meshes_["Teapot"]  = std::make_shared<Mesh>(":/models/teapot/teapot.obj", std);
 
     // add meshes of some procedural geometry objects (not loaded from OBJ files)
     meshes_["Cube"]   = std::make_shared<Mesh>(make_shared<geom::Cube>(), std);
-<<<<<<< HEAD
     meshes_["Sphere"] = std::make_shared<Mesh>(make_shared<geom::Sphere>(80,80), std);
     meshes_["Torus"]  = std::make_shared<Mesh>(make_shared<geom::Torus>(4, 2, 80,20), std);
 
@@ -212,11 +132,6 @@ void Scene::makeNodes()
     // initial state of post processing phases
     nodes_["post_pass_1"] = nodes_["blur"];
     nodes_["post_pass_2"] = nullptr;
-=======
-    meshes_["Sphere"] = std::make_shared<Mesh>(make_shared<geom::Planet>(80,80), std);
-    meshes_["Torus"]  = std::make_shared<Mesh>(make_shared<geom::Torus>(4, 2, 120,40), std);
-    meshes_["Rect"]   = std::make_shared<Mesh>(make_shared<geom::Rect>(1000,1000), std);
->>>>>>> e17cfa1db82653f3a745c7c5e9e922b04f381038
 
     // pack each mesh into a scene node, along with a transform that scales
     // it to standard size [1,1,1]
@@ -225,16 +140,6 @@ void Scene::makeNodes()
     nodes_["Torus"]   = createNode(meshes_["Torus"], true);
     nodes_["Duck"]    = createNode(meshes_["Duck"], true);
     nodes_["Teapot"]  = createNode(meshes_["Teapot"], true);
-<<<<<<< HEAD
-=======
-    nodes_["Dwarf"]   = createNode(meshes_["Dwarf"], true);
-
-    // rotate some models
-    nodes_["Sphere"]->transformation.rotate(-90, QVector3D(1,0,0));
-    nodes_["Torus"]->transformation.rotate(-60, QVector3D(1,0,0));
-//    nodes_["Rect"]->transformation.rotate(30, QVector3D(1,0,0));
-
->>>>>>> e17cfa1db82653f3a745c7c5e9e922b04f381038
 
 }
 
@@ -248,25 +153,8 @@ void Scene::makeScene()
     nodes_["Scene"] = createNode(nullptr, false);
     nodes_["World"]->children.push_back(nodes_["Scene"]);
 
-<<<<<<< HEAD
     // initial model to be shown in the scene
     nodes_["Scene"]->children.push_back(nodes_["Cube"]);
-=======
-    //create SkyBox
-    // load shader source files and compile them into OpenGL program objects
-    auto skybox_prog = createProgram(":/shaders/cube_mapping.vert", ":/shaders/cube_mapping.frag");
-    skyBoxMaterial_ = std::make_shared<SkyBoxMaterial>(skybox_prog);
-    auto skyFront       = std::make_shared<QOpenGLTexture>(QImage(":/textures/siege_bft.tga").mirrored());
-    std::array<string, 6> file_names =
-    {"real_dayrt.jpg","real_dayup.jpg","real_daybk.jpg",
-      "real_daylf.jpg", "real_daydn.jpg", "real_dayft.jpg"};
-
-    skyBoxMaterial_->sky = makeCubeMap(":/textures", file_names);
-
-    nodes_["SkyBox"] = createNode(std::make_shared<Mesh>(make_shared<geom::Cube>(), skyBoxMaterial_), false);
-    nodes_["SkyBox"]->transformation.scale(QVector3D(10, 10, 10));
-    nodes_["World"]->children.push_back(nodes_["SkyBox"]);
->>>>>>> e17cfa1db82653f3a745c7c5e9e922b04f381038
 
     // add camera node
     nodes_["Camera"] = createNode(nullptr, false);
@@ -276,170 +164,10 @@ void Scene::makeScene()
     nodes_["Light0"] = createNode(nullptr, false);
     nodes_["World"]->children.push_back(nodes_["Light0"]);
     lightNodes_.push_back(nodes_["Light0"]);
-<<<<<<< HEAD
     nodes_["Light0"]->transformation.translate(QVector3D(-0.55f, 0.68f, 4.34f)); // above camera
-=======
-
-    // light attached to camera, placed right above camera
-    nodes_["World"]->children.push_back(nodes_["Light0"]);
-    nodes_["Light0"]->transformation.translate(QVector3D(0, 10, 0));
-
 
 }
 
-
-std::shared_ptr<QOpenGLTexture>
-Scene::makeCubeMap(string path_to_images, std::array<string, 6> sides)
-{
-
-    //load six images for the six sides of the cube
-    std::vector<QImage> images;
-    for(auto side : sides){
-        QString filename = (path_to_images + "/" + side).c_str();
-        images.push_back( QImage(filename).
-                          convertToFormat(QImage::Format_RGBA8888));
-    }
->>>>>>> e17cfa1db82653f3a745c7c5e9e922b04f381038
-
-    //create and allocate cube map texture
-    std::shared_ptr<QOpenGLTexture> tex_;
-    tex_ =std::make_shared<QOpenGLTexture>(QOpenGLTexture::TargetCubeMap);
-    tex_->create();
-    tex_->setSize(images[0].width(), images[0].height(), images[0].depth());
-    tex_->setFormat(QOpenGLTexture::RGBA8_UNorm);
-    tex_->allocateStorage();
-
-    //the file names in array sides must match this of
-    std::array<QOpenGLTexture::CubeMapFace, 6> faces =
-    {{QOpenGLTexture::CubeMapPositiveX, QOpenGLTexture::CubeMapPositiveY,
-     QOpenGLTexture::CubeMapPositiveZ, QOpenGLTexture::CubeMapNegativeX,
-     QOpenGLTexture::CubeMapNegativeY, QOpenGLTexture::CubeMapNegativeZ}};
-
-    //set texture image data for each side
-    for(auto i : {0,1,2,3,4,5}){
-        tex_->setData( 0, 0, faces[i],
-                       QOpenGLTexture::RGBA, QOpenGLTexture::UInt8,
-                       (const void*)images[i].constBits(), 0);
-    }
-
-    // texture parameters and mip-map generation
-    tex_->setWrapMode(QOpenGLTexture::ClampToEdge);
-    tex_->setMagnificationFilter(QOpenGLTexture::Linear);
-    tex_->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
-    tex_->generateMipMaps();
-
-    return tex_;
-}
-
-<<<<<<< HEAD
-=======
-void Scene::setShader(QString txt)
-{
-    if(txt == "None") {
-        material_ = nullptr;
-    }
-    else if(txt == "Phong") {
-        material_ = groundMaterial_;
-        planetMaterial_->planet.debug_texcoords = false;
-        planetMaterial_->planet.debugWaterLand = false;
-        planetMaterial_->planet.useDayTexture = false;
-        planetMaterial_->planet.useNightTexture = false;
-        planetMaterial_->planet.useGlossTexture = false;
-        planetMaterial_->planet.useCloudsTexture = false;
-    }
-    else if(txt == "Debug Tex Coords") {
-        material_ = groundMaterial_;
-        planetMaterial_->planet.debug_texcoords = true;
-        planetMaterial_->planet.debugWaterLand = false;
-        planetMaterial_->planet.useDayTexture = false;
-        planetMaterial_->planet.useNightTexture = false;
-        planetMaterial_->planet.useGlossTexture = false;
-        planetMaterial_->planet.useCloudsTexture = false;
-    }
-    else if(txt == "Debug Day/Night") {
-        material_ = groundMaterial_;
-        planetMaterial_->planet.debug_texcoords = false;
-        planetMaterial_->planet.debug = true;
-        planetMaterial_->planet.debugWaterLand = false;
-        planetMaterial_->planet.useDayTexture = false;
-        planetMaterial_->planet.useNightTexture = false;
-        planetMaterial_->planet.useGlossTexture = false;
-        planetMaterial_->planet.useCloudsTexture = false;
-    }
-    else if(txt == "Day Texture") {
-        material_ = groundMaterial_;
-        planetMaterial_->planet.debug_texcoords = false;
-        planetMaterial_->planet.debug = false;
-        planetMaterial_->planet.debugWaterLand = false;
-        planetMaterial_->planet.useDayTexture = true;
-        planetMaterial_->planet.useNightTexture = false;
-        planetMaterial_->planet.useGlossTexture = false;
-        planetMaterial_->planet.useCloudsTexture = false;
-    }
-    else if(txt == "Night Texture") {
-        material_ = groundMaterial_;
-        planetMaterial_->planet.debug_texcoords = false;
-        planetMaterial_->planet.debug = false;
-        planetMaterial_->planet.debugWaterLand = false;
-        planetMaterial_->planet.useDayTexture = false;
-        planetMaterial_->planet.useNightTexture = true;
-        planetMaterial_->planet.useGlossTexture = false;
-        planetMaterial_->planet.useCloudsTexture = false;
-    }
-    else if(txt == "Day+Night Texture") {
-        material_ = groundMaterial_;
-        planetMaterial_->planet.debug_texcoords = false;
-        planetMaterial_->planet.debug = false;
-        planetMaterial_->planet.debugWaterLand = false;
-        planetMaterial_->planet.useDayTexture = true;
-        planetMaterial_->planet.useNightTexture = true;
-        planetMaterial_->planet.useGlossTexture = false;
-        planetMaterial_->planet.useCloudsTexture = false;
-    }
-    else if(txt == "Debug Gloss") {
-        material_ = groundMaterial_;
-        planetMaterial_->planet.debug_texcoords = false;
-        planetMaterial_->planet.debug = false;
-        planetMaterial_->planet.debugWaterLand = true;
-        planetMaterial_->planet.useDayTexture = false;
-        planetMaterial_->planet.useNightTexture = false;
-        planetMaterial_->planet.useGlossTexture = true;
-        planetMaterial_->planet.useCloudsTexture = false;
-    }
-    else if(txt == "Phong+Gloss") {
-        material_ = groundMaterial_;
-        planetMaterial_->planet.debug_texcoords = false;
-        planetMaterial_->planet.debug = false;
-        planetMaterial_->planet.debugWaterLand = false;
-        planetMaterial_->planet.useDayTexture = false;
-        planetMaterial_->planet.useNightTexture = false;
-        planetMaterial_->planet.useGlossTexture = true;
-        planetMaterial_->planet.useCloudsTexture = false;
-    }
-    else if(txt == "Day+Night+Gloss") {
-        material_ = groundMaterial_;
-        planetMaterial_->planet.debug_texcoords = false;
-        planetMaterial_->planet.debug = false;
-        planetMaterial_->planet.debugWaterLand = false;
-        planetMaterial_->planet.useDayTexture = true;
-        planetMaterial_->planet.useNightTexture = true;
-        planetMaterial_->planet.useGlossTexture = true;
-        planetMaterial_->planet.useCloudsTexture = false;
-    }
-    else if(txt == "+Clouds") {
-        material_ = groundMaterial_;
-        planetMaterial_->planet.debug_texcoords = false;
-        planetMaterial_->planet.debug = false;
-        planetMaterial_->planet.debugWaterLand = false;
-        planetMaterial_->planet.useDayTexture = true;
-        planetMaterial_->planet.useNightTexture = true;
-        planetMaterial_->planet.useGlossTexture = true;
-        planetMaterial_->planet.useCloudsTexture = true;
-    }
-
-    update();
-}
->>>>>>> e17cfa1db82653f3a745c7c5e9e922b04f381038
 
 // this method is called implicitly by the Qt framework when a redraw is required.
 void Scene::draw()
@@ -479,15 +207,8 @@ void Scene::draw()
         qDebug() << "Creating FBOs with size" << fbo1_->size();
     }
 
-<<<<<<< HEAD
     // draw the actual scene into fbo1
     fbo1_->bind();
-=======
-    //plane move texture
-    if(plane_started)
-        refreshTexture();
-
->>>>>>> e17cfa1db82653f3a745c7c5e9e922b04f381038
     draw_scene_();
     fbo1_->release();
     auto fbo_to_be_rendered = fbo1_;
@@ -554,15 +275,10 @@ void Scene::draw_scene_()
 
         // determine current light position and set it in all materials
         QMatrix4x4 lightToWorld = nodes_["World"]->toParentTransform(lightNodes_[i]);
-<<<<<<< HEAD
         for(auto mat : materials_) {
             auto phong = mat.second; // mat is of type (key, value)
             phong->lights[i].position_WC = lightToWorld * QVector3D(0,0,0);
         }
-=======
-        planetMaterial_->lights[i].position_WC = lightToWorld * QVector3D(0,0,0);
-        groundMaterial_->lights[i].position_WC = lightToWorld * QVector3D(0,0,0);
->>>>>>> e17cfa1db82653f3a745c7c5e9e922b04f381038
 
         // draw light pass i
         nodes_["World"]->draw(camera, i);
@@ -697,7 +413,6 @@ void Scene::setSceneNode(QString node)
     update();
 }
 
-<<<<<<< HEAD
 // methods to change scene parameters ---------------------------------------------------------
 void Scene::setBackgroundColor(QVector3D rgb) {
     bgcolor_ = rgb; update();
@@ -759,33 +474,6 @@ void Scene::setRefractRatio(float v)
     materials_["red"]->envmap.refract_ratio = v;
     update();
 }
-=======
-void Scene::moveGround(QVector2D movement)
-{
-    QMatrix4x4 mat;
-
-    mat.translate(0, 0, 0.5);
-    mat.rotate(rotation_angle.x(), QVector3D(0,1,0));
-
-    nodes_["Camera"]->transformation.rotate(rotation_angle.x()*180/3.14159265359, QVector3D(0,1,0));
-    groundMaterial_->translation += QVector2D(movement.y(),movement.x());
-//    if(rotation_angle.x()!=0){
-//        nodes_["Camera"]->transformation = mat;
-//    }
-}
-
-// pass key/mouse events on to navigator objects
-void Scene::keyPressEvent(QKeyEvent *event) {
-
-    if(plane_started==false && event->key() == Qt::Key_Up)
-        plane_started = true;
-    // dispatch: when Modifier is pressed, navigate light, else camera
-    if(event->modifiers() & Qt::AltModifier)
-        lightNavigator_->keyPressEvent(event);
-    else
-        //cameraNavigator_->keyPressEvent(event);
-        planeNavigator_->keyPressEvent(event);
->>>>>>> e17cfa1db82653f3a745c7c5e9e922b04f381038
 
 // change kernel size of al post processing filters
 void Scene::setPostFilterKernelSize(int n) {
@@ -793,7 +481,6 @@ void Scene::setPostFilterKernelSize(int n) {
         mat.second->kernel_size = QSize(n,n);
     update();
 }
-<<<<<<< HEAD
 
 // change post processing filter
 void Scene::useSimpleBlur() {
@@ -805,10 +492,6 @@ void Scene::useTwoPassGauss() {
     nodes_["post_pass_1"] = nodes_["gauss_1"];
     nodes_["post_pass_2"] = nodes_["gauss_2"];
     update();
-=======
-void Scene::keyReleaseEvent(QKeyEvent *event){
-    planeNavigator_->keyReleaseEvent(event);
->>>>>>> e17cfa1db82653f3a745c7c5e9e922b04f381038
 }
 void Scene::toggleJittering(bool value)
 {
@@ -866,31 +549,7 @@ void Scene::updateViewport(size_t width, size_t height)
     // make sure the OpenGL viewport projection is correct
     glViewport(0,0,GLint(width),GLint(height));
 
-<<<<<<< HEAD
     // reset (and re-create) FBOs if image size changes
     fbo1_ = fbo2_ = nullptr;
 }
-=======
-void Scene::refreshTexture(){
-    if(planeNavigator_->speedarr!=QVector3D(0,0,0)){
-        if(planeNavigator_->speedarr.x()==1)
-            planespeed[0]+=0.00001f;
-        if(planeNavigator_->speedarr.x()==-1 && planespeed[0]>0.0002f)
-            planespeed[0]-=0.00001f;
-        if(planeNavigator_->speedarr.y()==1)
-        {
-            planespeed[1]+=0.00004f;
-            rotation_angle[0]+=0.00004f;
-        }
-        if(planeNavigator_->speedarr.y()==-1)
-        {
-            planespeed[1]-=0.00004f;
-            rotation_angle[0]-=0.00004f;
-        }
-    }
-    qDebug() << "X: " << planespeed.x() << "Y: " << planespeed.y() << "rotationangle: " << rotation_angle.x();
-    moveGround(QVector2D(planespeed.x(),planespeed.y()));
-}
-
->>>>>>> e17cfa1db82653f3a745c7c5e9e922b04f381038
 

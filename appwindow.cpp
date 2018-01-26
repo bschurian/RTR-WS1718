@@ -55,7 +55,6 @@ AppWindow::AppWindow(QWidget *parent) :
             [this](bool) { scene().setBackgroundColor(QVector3D(1,1,1)); } );
     connect(ui->light0Slider, &QSlider::valueChanged,
             [this](int value) { scene().setLightIntensity(0, float(value)/100.0); } );
-<<<<<<< HEAD
     connect(ui->modelComboBox, &QComboBox::currentTextChanged,
             [this](QString value) { scene().setSceneNode(value); } );
 
@@ -126,34 +125,6 @@ void AppWindow::displayBufferContents(unsigned int id, QString label, const QIma
     assert(int(id) <= layout->count());
     if(layout->count()==int(id))
         layout->addWidget(buttons_[id]);
-=======
-    connect(ui->nightLightSlider, &QSlider::valueChanged,
-            [this](int value) { scene().moveGround(QVector2D(float(value)/100.0,0)); } );
-    connect(ui->blendExpSlider, &QSlider::valueChanged,
-            [this](int value) { scene().setBlendExponent(float(value)/100.0); } );
-    connect(ui->animationCheckbox, &QCheckBox::stateChanged,
-            [this](bool onOrOff) { scene().toggleAnimation(onOrOff); } );
-    connect(ui->bumpMapCheckbox, &QCheckBox::stateChanged,
-            [this](bool onOrOff) { scene().toggleBumpMapping(onOrOff); } );
-    connect(ui->dispMapCheckBox, &QCheckBox::stateChanged,
-            [this](bool onOrOff) { scene().toggleDisplacementMapping(onOrOff); } );
-    connect(ui->bumpMapSlider, &QSlider::valueChanged,
-            [this](int value) { scene().setBumpMapScale(float(value)/100.0); } );
-    connect(ui->dispMapSlider, &QSlider::valueChanged,
-            [this](int value) { scene().setDisplacementMapScale(float(value)/100.0); } );
-
-    // wireframe / vector shaders
-    connect(ui->wireframeCheckBox, &QCheckBox::stateChanged,
-            [this](bool onOrOff) { scene().toggleWireframe(onOrOff); } );
-    connect(ui->vectorScaleSlider, &QSlider::valueChanged,
-            [this](int value) { scene().setVectorScale(float(value)/100.0); } );
-
-    // from Stack overflow, syntax is ... great ...
-    connect(ui->vectorsGroup, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked),
-            [this](int which) {
-        scene().visualizeVectors(which);
-    });
->>>>>>> e17cfa1db82653f3a745c7c5e9e922b04f381038
 
 }
 
@@ -168,7 +139,6 @@ void AppWindow::hideBufferContents()
 // called when the window is initially shown
 void AppWindow::setDefaultUIValues() {
 
-<<<<<<< HEAD
     bool b = connect(&(this->scene()), &Scene::displayBufferContents,
                      this, &AppWindow::displayBufferContents);
     assert(b);
@@ -198,17 +168,6 @@ void AppWindow::setDefaultUIValues() {
     ui->greyBgRadioButton->setChecked(true);
     ui->modelComboBox->setCurrentText("Cube");
     ui->modelComboBox->setCurrentText("Duck");
-=======
-    ui->animationCheckbox->hide();
-    ui->sunlightSlider->setValue(85.0);
-    ui->nightLightSlider->setValue(20.0);
-    ui->blendExpSlider->setValue(30.0);
-    ui->bumpMapSlider->setValue(100);
-    ui->dispMapSlider->setValue(100);
-    ui->vectorScaleSlider->setValue(10.0);
-    ui->greyBgRadioButton->setChecked(true);
-    ui->modelComboBox->setCurrentText("Rect");
->>>>>>> e17cfa1db82653f3a745c7c5e9e922b04f381038
 
 }
 
@@ -273,13 +232,3 @@ void AppWindow::keyPressEvent(QKeyEvent *event)
     // pass on all other events to the scene
     scene().keyPressEvent(event);
 }
-
-void AppWindow::keyReleaseEvent(QKeyEvent *event)
-{
-    assert(event);
-
-    // pass on all events to the scene
-    scene().keyReleaseEvent(event);
-}
-
-

@@ -2,7 +2,6 @@
     <qresource prefix="/">
         <file>shaders/phong.frag</file>
         <file>shaders/phong.vert</file>
-<<<<<<< HEAD
         <file>shaders/blur.frag</file>
         <file>shaders/gauss_9x9_passA.frag</file>
         <file>shaders/gauss_9x9_passB.frag</file>
@@ -12,22 +11,5 @@
         <file>shaders/textured_phong.vert</file>
         <file>shaders/skybox.frag</file>
         <file>shaders/skybox.vert</file>
-=======
-        <file>shaders/planet_with_bumps.frag</file>
-        <file>shaders/planet_with_bumps.vert</file>
-        <file>shaders/vectors_per_triangle.frag</file>
-        <file>shaders/vectors_per_triangle.geom</file>
-        <file>shaders/vectors_per_triangle.vert</file>
-        <file>shaders/vectors.frag</file>
-        <file>shaders/vectors.geom</file>
-        <file>shaders/vectors.vert</file>
-        <file>shaders/wireframe.frag</file>
-        <file>shaders/wireframe.geom</file>
-        <file>shaders/wireframe.vert</file>
-        <file>shaders/ground.frag</file>
-        <file>shaders/ground.vert</file>
-        <file>shaders/cube_mapping.frag</file>
-        <file>shaders/cube_mapping.vert</file>
->>>>>>> e17cfa1db82653f3a745c7c5e9e922b04f381038
     </qresource>
 </RCC>
