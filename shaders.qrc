@@ -11,5 +11,6 @@
         <file>shaders/textured_phong.vert</file>
         <file>shaders/skybox.frag</file>
         <file>shaders/skybox.vert</file>
+        <file>shaders/motion_blur.frag</file>
     </qresource>
 </RCC>

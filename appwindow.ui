@@ -85,6 +85,11 @@
                </item>
                <item>
                 <property name="text">
+                 <string>Test</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
                  <string>Sphere</string>
                 </property>
                </item>
@@ -325,6 +330,13 @@
               </widget>
              </item>
             </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="playerVis">
+            <property name="text">
+             <string>Player visible</string>
+            </property>
            </widget>
           </item>
          </layout>

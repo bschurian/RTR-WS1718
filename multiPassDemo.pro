@@ -84,6 +84,10 @@ win32: LIBS += -lopengl32
 # hack to work around a bug in QtCreator, not always running qmake when it should
 # see https://bugreports.qt.io/browse/QTBUG-13334
 shaders.depends += \
-    $$PWD/assets/shaders/phong.frag $$PWD/assets/shaders/phong.vert 
+    $$PWD/assets/shaders/blur.frag $$PWD/assets/shaders/post.vert
 shaders.commands =
 QMAKE_EXTRA_TARGETS += shaders
+
+DISTFILES += \
+    models/player/att.obj \
+    models/player/blk.obj

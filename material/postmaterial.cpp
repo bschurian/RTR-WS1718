@@ -9,8 +9,11 @@ void PostMaterial::apply(unsigned int)
     QOpenGLFunctions gl(QOpenGLContext::currentContext());
     gl.glActiveTexture(GL_TEXTURE0 + tex_unit);
     gl.glBindTexture(GL_TEXTURE_2D, post_texture_id);
+    gl.glActiveTexture(GL_TEXTURE0 + tex_unit +1);
+    gl.glBindTexture(GL_TEXTURE_2D, post_texture_id2);
 
     prog_->setUniformValue("post_tex", tex_unit);
+    prog_->setUniformValue("post_tex2", tex_unit+1);
     prog_->setUniformValue("image_width", (GLint)image_size.width());
     prog_->setUniformValue("image_height", (GLint)image_size.height());
     prog_->setUniformValue("kernel_width", (GLint)kernel_size.width());

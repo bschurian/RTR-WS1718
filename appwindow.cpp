@@ -97,6 +97,7 @@ AppWindow::AppWindow(QWidget *parent) :
             hideBufferContents();
     } );
     connect(ui->jitterCheckbox, &QCheckBox::toggled,[this](bool value){ scene().toggleJittering(value); });
+    connect(ui->playerVis, &QCheckBox::toggled,[this](bool value){ scene().togglePlayerVisibility(value); });
 
     // strange cast here: see https://stackoverflow.com/questions/16794695/connecting-overloaded-signals-and-slots-in-qt-5
     connect(ui->post_kernel_size, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
@@ -162,12 +163,18 @@ void AppWindow::setDefaultUIValues() {
     ui->mirrorSlider->setValue(20);
     ui->envMapCheckbox->setChecked(false);
     ui->envMapCheckbox->setChecked(true);
-    ui->skyBoxToggle->setChecked(true);
     ui->skyBoxToggle->setChecked(false);
+    ui->skyBoxToggle->setChecked(true);
+    ui->splitScreenCheckbox->setChecked(true);
+    ui->splitScreenCheckbox->setChecked(false);
     ui->blackBgRadioButton->setChecked(true);
     ui->greyBgRadioButton->setChecked(true);
     ui->modelComboBox->setCurrentText("Cube");
     ui->modelComboBox->setCurrentText("Duck");
+
+    ui->modelComboBox->setCurrentText("Test");
+    ui->playerVis->setChecked(false);
+    ui->playerVis->setChecked(true);
 
 }
 

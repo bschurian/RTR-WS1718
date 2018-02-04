@@ -10,5 +10,11 @@
         <file>textures/bridge2048/posx.jpg</file>
         <file>textures/bridge2048/posy.jpg</file>
         <file>textures/bridge2048/posz.jpg</file>
+        <file>models/enemy/1_attackable.obj</file>
+        <file>models/enemy/2_attackable.obj</file>
+        <file>models/enemy/3_attackable.obj</file>
+        <file>models/enemy/4_attackable.obj</file>
+        <file>models/player/att.obj</file>
+        <file>models/player/blk.obj</file>
     </qresource>
 </RCC>

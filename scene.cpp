@@ -106,14 +106,27 @@ void Scene::makeNodes()
     post_materials_["gauss_1"] = make_shared<PostMaterial>(gaussA,11);
     post_materials_["gauss_2"] = make_shared<PostMaterial>(gaussB,12);
 
+    auto motionBlur = createProgram(":/shaders/post.vert",
+                              ":/shaders/motion_blur.frag");
+    post_materials_["motion_blur"] = make_shared<PostMaterial>(motionBlur, 11);
+
     // load meshes from .obj files and assign shader programs to them
     meshes_["Duck"]    = std::make_shared<Mesh>(":/models/duck/duck.obj", std);
     meshes_["Teapot"]  = std::make_shared<Mesh>(":/models/teapot/teapot.obj", std);
+    //meshes_["Test"]  = std::make_shared<Mesh>(":/models/enemy/1_attackable.obj", std);
+    meshes_["Test"]  = std::make_shared<Mesh>(":/models/player/blk.obj", std);
+    meshes_["1_E_Stance"]  = std::make_shared<Mesh>(":/models/enemy/1_attackable.obj", std);
+    meshes_["2_E_Stance"]  = std::make_shared<Mesh>(":/models/enemy/2_attackable.obj", std);
+    meshes_["3_E_Stance"]  = std::make_shared<Mesh>(":/models/enemy/3_attackable.obj", std);
+    meshes_["4_E_Stance"]  = std::make_shared<Mesh>(":/models/enemy/4_attackable.obj", std);
+    meshes_["P_Attack"]  = std::make_shared<Mesh>(":/models/player/att.obj", std);
+    meshes_["P_Block"]  = std::make_shared<Mesh>(":/models/player/blk.obj", std);
 
     // add meshes of some procedural geometry objects (not loaded from OBJ files)
     meshes_["Cube"]   = std::make_shared<Mesh>(make_shared<geom::Cube>(), std);
     meshes_["Sphere"] = std::make_shared<Mesh>(make_shared<geom::Sphere>(80,80), std);
     meshes_["Torus"]  = std::make_shared<Mesh>(make_shared<geom::Torus>(4, 2, 80,20), std);
+
 
     // full-screen rectangles for post processing
     meshes_["original"]  = std::make_shared<Mesh>(make_shared<geom::RectXY>(1, 1),
@@ -129,8 +142,13 @@ void Scene::makeNodes()
     meshes_["gauss_2"]   = std::make_shared<Mesh>(make_shared<geom::RectXY>(1, 1), post_materials_["gauss_2"]);
     nodes_ ["gauss_2"]   = createNode(meshes_["gauss_2"], false);
 
+    meshes_["motion_blur"]      = std::make_shared<Mesh>(make_shared<geom::RectXY>(1, 1),
+                                                  post_materials_["motion_blur"]);
+    nodes_["motion_blur"]       = createNode(meshes_["motion_blur"], false);
+
+
     // initial state of post processing phases
-    nodes_["post_pass_1"] = nodes_["blur"];
+    nodes_["post_pass_1"] = nodes_["motion_blur"];
     nodes_["post_pass_2"] = nullptr;
 
     // pack each mesh into a scene node, along with a transform that scales
@@ -140,6 +158,87 @@ void Scene::makeNodes()
     nodes_["Torus"]   = createNode(meshes_["Torus"], true);
     nodes_["Duck"]    = createNode(meshes_["Duck"], true);
     nodes_["Teapot"]  = createNode(meshes_["Teapot"], true);
+    nodes_["Test"]  = createNode(meshes_["Test"], true);
+//    nodes_["Test"]->transformation.translate(0,-0.75,0);
+//    nodes_["Test"]->transformation.scale(4);
+
+    nodes_["Test"]->transformation.rotate(180, QVector3D(0,1,0));
+    nodes_["Test"]->transformation.translate(QVector3D(0,0.05,-0.35));
+
+
+    auto stanceName = "1_E_Stance";
+    nodes_[stanceName]  = createNode(meshes_[stanceName], true);
+    nodes_[stanceName]->transformation.translate(0,-0.75,0);
+    nodes_[stanceName]->transformation.scale(4);
+    // im too stupid too get loops in cplusplus tonight
+    stanceName = "2_E_Stance";
+    nodes_[stanceName]  = createNode(meshes_[stanceName], true);
+    nodes_[stanceName]->transformation.translate(0,-0.75,0);
+    nodes_[stanceName]->transformation.scale(4);
+    stanceName = "3_E_Stance";
+    nodes_[stanceName]  = createNode(meshes_[stanceName], true);
+    nodes_[stanceName]->transformation.translate(0,-0.75,0);
+    nodes_[stanceName]->transformation.scale(4);
+    stanceName = "4_E_Stance";
+    nodes_[stanceName]  = createNode(meshes_[stanceName], true);
+    nodes_[stanceName]->transformation.translate(0,-0.75,0);
+    nodes_[stanceName]->transformation.scale(4);
+
+    nodes_["P_Attack"]  = createNode(meshes_["P_Attack"], true);
+    nodes_["P_Attack"]->transformation.rotate(180, QVector3D(0,1,0));
+    nodes_["P_Attack"]->transformation.translate(QVector3D(0.05,0.15,-0.6));
+    nodes_["P_Block"]  = createNode(meshes_["P_Block"], true);
+    nodes_["P_Block"]->transformation.rotate(180, QVector3D(0,1,0));
+    nodes_["P_Block"]->transformation.translate(QVector3D(0,0.05,-0.35));
+
+
+    QTimer *timer = new QTimer(this);
+    timer->start(1000/30);
+    connect(timer, SIGNAL(timeout()), this, SLOT(update()));
+
+    QTimer *timer2 = new QTimer(this);
+    timer2->start(3000);
+    connect(timer2, SIGNAL(timeout()), this, SLOT(setEnemyStance()));
+
+    QTimer *timer3 = new QTimer(this);
+    timer3->start(1);
+    connect(timer3, SIGNAL(timeout()), this, SLOT(moveEnemy()));
+
+}
+
+void Scene::setEnemyStance()
+{
+    enemy_state++;
+    enemy_state = enemy_state % 4;
+    nodes_["Enemy"]->children.clear();
+    nodes_["Enemy"]->children.push_back(nodes_[to_string(enemy_state+1).append("_E_Stance").c_str()]);
+}
+
+void Scene::moveEnemy()
+{
+    // calculate total elapsed time and time since last draw call
+    auto current = clock_.now();
+
+    // animate enemy
+    auto rotValue = 1.0;
+    if(moveRight){
+        rotValue = 1.0;
+    }else{
+        rotValue = -1.0;
+    }
+    //scale the rotation
+    rotValue *= 0.05;
+
+    //rotate around hip
+    nodes_["Enemy"]->transformation.translate(QVector3D(0,-1,0));
+//    nodes_["Enemy"]->transformation.rotate(rotValue, QVector3D(0,0,1));
+    nodes_["Enemy"]->transformation.rotate(sin(enemy_movement/10)/10, QVector3D(0,0,1));
+    nodes_["Enemy"]->transformation.translate(QVector3D(0,1,0));
+    enemy_movement += rotValue;
+    if(enemy_movement > 10.0 || enemy_movement < -10.0){
+        moveRight = !moveRight;
+    }
+
 
 }
 
@@ -155,6 +254,13 @@ void Scene::makeScene()
 
     // initial model to be shown in the scene
     nodes_["Scene"]->children.push_back(nodes_["Cube"]);
+    nodes_["Enemy"] = createNode(nullptr, false);
+    nodes_["Player"] = createNode(nullptr, false);
+    nodes_["Scene"]->children.push_back(nodes_["Enemy"]);
+    nodes_["Scene"]->children.push_back(nodes_["Player"]);
+//    nodes_["Enemy"]->transformation.translate(QVector3D(0,-1,0));
+//    nodes_["Enemy"]->transformation.rotate(-sin(1)/10, QVector3D(0,0,1));
+//    nodes_["Enemy"]->transformation.translate(QVector3D(0,1,0));
 
     // add camera node
     nodes_["Camera"] = createNode(nullptr, false);
@@ -172,6 +278,7 @@ void Scene::makeScene()
 // this method is called implicitly by the Qt framework when a redraw is required.
 void Scene::draw()
 {
+
     // calculate animation time
     chrono::milliseconds millisec_since_first_draw;
     chrono::milliseconds millisec_since_last_draw;
@@ -188,7 +295,7 @@ void Scene::draw()
         mat.second->time = t;
 
     // create an FBO to render the scene into
-    if(!fbo1_) {
+    if(!new_frame) {
 
         // for high-res Retina displays
         auto pixel_scale = parent_->devicePixelRatio();
@@ -204,42 +311,63 @@ void Scene::draw()
         fbo2_ = std::make_shared<QOpenGLFramebufferObject>(parent_->width()*pixel_scale,
                                                            parent_->height()*pixel_scale,
                                                            fbo_format);
-        qDebug() << "Creating FBOs with size" << fbo1_->size();
+        new_frame = std::make_shared<QOpenGLFramebufferObject>(parent_->width()*pixel_scale,
+                                                          parent_->height()*pixel_scale,
+                                                          fbo_format);
+
+        qDebug() << "Creating FBOs with size" << new_frame->size();
     }
 
-    // draw the actual scene into fbo1
-    fbo1_->bind();
+    // draw the actual scene into new_frame
+    new_frame->bind();
     draw_scene_();
-    fbo1_->release();
-    auto fbo_to_be_rendered = fbo1_;
+    new_frame->release();
+    auto fbo_to_be_rendered = new_frame;
     auto node_to_be_rendered = nodes_["post_pass_1"];
 
-    // second pass?
-    if(nodes_["post_pass_2"]) {
+    if(last_FBO_rendered_was_one){
         fbo2_->bind();
-        post_draw_full_(*fbo_to_be_rendered, *node_to_be_rendered);
+    }else{
+        fbo1_->bind();
+    }
+    if(last_FBO_rendered_was_one){
+        post_draw_full_(*fbo_to_be_rendered, *fbo1_, *node_to_be_rendered);
+    }else{
+        post_draw_full_(*fbo_to_be_rendered, *fbo2_, *node_to_be_rendered);
+    }
+    if(last_FBO_rendered_was_one){
         fbo2_->release();
-        fbo_to_be_rendered = fbo2_;
-        node_to_be_rendered = nodes_["post_pass_2"];
+    }else{
+        fbo1_->release();
     }
 
     // final rendering pass, into visible framebuffer (object)
     if(split_display_) {
-        post_draw_split_(*fbo1_, *nodes_["original"],
-                         *fbo_to_be_rendered, *node_to_be_rendered);
+        if(last_FBO_rendered_was_one){
+            post_draw_split_(*new_frame, *nodes_["original"],
+                             *fbo_to_be_rendered, *fbo1_, *node_to_be_rendered);
+        }else{
+            post_draw_split_(*new_frame, *nodes_["original"],
+                             *fbo_to_be_rendered, *fbo2_, *node_to_be_rendered);
+        }
     } else {
-        post_draw_full_(*fbo_to_be_rendered, *node_to_be_rendered);
+        if(last_FBO_rendered_was_one){
+            post_draw_full_(*fbo_to_be_rendered, *fbo1_, *node_to_be_rendered);
+        }else{
+            post_draw_full_(*fbo_to_be_rendered, *fbo2_, *node_to_be_rendered);
+        }
     }
 
     // extract FBI image and display in the UI, every 20 frames
     static size_t framecount=20-2; // initially will render twice
     if(show_FBOs_) {
         if(++framecount % 20 == 0) {
-            emit displayBufferContents(0, "rendered scene", fbo1_->toImage());
-            if(nodes_["post_pass_2"])
-                emit displayBufferContents(1, "post pass 1", fbo2_->toImage());
+            emit displayBufferContents(0, "rendered scene", new_frame->toImage());
+            emit displayBufferContents(1, "fbo 1", fbo1_->toImage());
         }
     }
+
+    last_FBO_rendered_was_one = !last_FBO_rendered_was_one;
 
 }
 
@@ -290,7 +418,7 @@ void Scene::draw_scene_()
     }
 }
 
-void Scene::post_draw_full_(QOpenGLFramebufferObject &fbo, Node& node)
+void Scene::post_draw_full_(QOpenGLFramebufferObject &fbo, QOpenGLFramebufferObject &fbo2, Node& node)
 {
     // set up camera for post processing
     QMatrix4x4 view, projection;
@@ -304,6 +432,7 @@ void Scene::post_draw_full_(QOpenGLFramebufferObject &fbo, Node& node)
     // use the texture from the FBO during rendering
     for(auto mat : post_materials_) {
         mat.second->post_texture_id = fbo.texture();
+        mat.second->post_texture_id2 = fbo2.texture();
         mat.second->image_size = QSize(w,h);
     }
 
@@ -317,7 +446,7 @@ void Scene::post_draw_full_(QOpenGLFramebufferObject &fbo, Node& node)
 }
 
 void Scene::post_draw_split_(QOpenGLFramebufferObject &fbo1, Node& node1,
-                             QOpenGLFramebufferObject &fbo2, Node& node2)
+                             QOpenGLFramebufferObject &fbo2, QOpenGLFramebufferObject &fbo3, Node& node2)
 {
     // set up camera for post processing
     QMatrix4x4 view, projection;
@@ -350,6 +479,7 @@ void Scene::post_draw_split_(QOpenGLFramebufferObject &fbo1, Node& node1,
     // use texture from fbo2 during rendering
     for(auto mat : post_materials_) {
         mat.second->post_texture_id = fbo2.texture();
+        mat.second->post_texture_id = fbo3.texture();
         mat.second->image_size = QSize(w,h);
     }
 
@@ -402,13 +532,26 @@ void Scene::toggleAnimation(bool flag)
     }
 }
 
+//@TODO rm param
 void Scene::setSceneNode(QString node)
 {
     auto n = nodes_[node];
     assert(n);
 
     nodes_["Scene"]->children.clear();
-    nodes_["Scene"]->children.push_back(n);
+//    nodes_["Scene"]->children.push_back(n);
+    nodes_["Enemy"]->children.push_back(nodes_["1_E_Stance"]);
+    nodes_["Player"]->children.clear();
+    if(blocking){
+        nodes_["Player"]->children.push_back(nodes_["P_Block"]);
+    }else{
+        nodes_["Player"]->children.push_back(nodes_["P_Attack"]);
+    }
+
+    nodes_["Scene"]->children.push_back(nodes_["Enemy"]);
+    nodes_["Scene"]->children.push_back(nodes_["Player"]);
+
+    qDebug() << "";to_string(enemy_state).append("_E_Stance");
 
     update();
 }
@@ -509,6 +652,13 @@ void Scene::toggleFBODisplay(bool value)
     update();
 }
 
+//player model
+void Scene::togglePlayerVisibility(bool v)
+{
+    playerVisible = v;
+    update();
+}
+
 // navigation -------------------------------------------------------------------------------
 
 void Scene::keyPressEvent(QKeyEvent *event) {
@@ -524,15 +674,42 @@ void Scene::keyPressEvent(QKeyEvent *event) {
 }
 void Scene::mousePressEvent(QMouseEvent *event)
 {
-    navigator_->mousePressEvent(event); update();
+    if(event->button()==1){
+        blocking = false;
+    }
+    nodes_["Player"]->children.clear();
+    if(blocking){
+        if(playerVisible){
+            nodes_["Player"]->children.push_back(nodes_["P_Block"]);
+        }
+    }else{
+        if(playerVisible){
+                nodes_["Player"]->children.push_back(nodes_["P_Attack"]);
+        }
+    }
+    update();
 }
 void Scene::mouseMoveEvent(QMouseEvent *event)
 {
-    navigator_->mouseMoveEvent(event); update();
+//    navigator_->mouseMoveEvent(event); update();
+
 }
 void Scene::mouseReleaseEvent(QMouseEvent *event)
 {
-    navigator_->mouseReleaseEvent(event); update();
+//    navigator_->mouseReleaseEvent(event); update();
+    blocking = true;
+    nodes_["Player"]->children.clear();
+    if(blocking){
+        if(playerVisible){
+            nodes_["Player"]->children.push_back(nodes_["P_Block"]);
+        }
+    }else{
+        if(playerVisible){
+                nodes_["Player"]->children.push_back(nodes_["P_Attack"]);
+        }
+    }
+    update();
+
 }
 void Scene::wheelEvent(QWheelEvent *event) {
     navigator_->wheelEvent(event); update();
@@ -550,6 +727,6 @@ void Scene::updateViewport(size_t width, size_t height)
     glViewport(0,0,GLint(width),GLint(height));
 
     // reset (and re-create) FBOs if image size changes
-    fbo1_ = fbo2_ = nullptr;
+    new_frame = fbo1_ = fbo2_ = nullptr;
 }
 

@@ -50,6 +50,11 @@ public slots:
     // change background color
     void setBackgroundColor(QVector3D rgb);
 
+    //modelAnimation
+    void setEnemyStance();
+    void moveEnemy();
+    void togglePlayerVisibility(bool v);
+
     // methods to change common material parameters
     void toggleAnimation(bool flag);
     void setLightIntensity(size_t i, float v);
@@ -112,6 +117,17 @@ protected:
     std::chrono::time_point<std::chrono::high_resolution_clock> firstDrawTime_;
     std::chrono::time_point<std::chrono::high_resolution_clock> lastDrawTime_;
 
+    // game states
+    int life = 5;
+    //1-4 blocking stance
+    int enemy_state = 0;
+    bool blocking = true;
+    double enemy_movement = 0;
+    bool moveRight = true;
+
+    //model display
+    bool playerVisible = true;
+
     // rotation
     double angle = 0.0;
     bool rotationOn = true;
@@ -120,15 +136,16 @@ protected:
     QVector3D bgcolor_ = QVector3D(0.4f,0.4f,0.4f);
 
     // draw from FBO for post processing, use full viewport
-    void post_draw_full_(QOpenGLFramebufferObject& fbo, Node& node);
+    void post_draw_full_(QOpenGLFramebufferObject& fbo, QOpenGLFramebufferObject& fbo2, Node& node);
     // draw from FBO, render left half of node1 + right half of node2
-    void post_draw_split_(QOpenGLFramebufferObject &fbo1, Node &node1, QOpenGLFramebufferObject &fbo2, Node &node2);
+    void post_draw_split_(QOpenGLFramebufferObject &fbo1, Node &node1, QOpenGLFramebufferObject &fbo2, QOpenGLFramebufferObject& fbo3, Node &node2);
 
     // multi-pass rendering
-    std::shared_ptr<QOpenGLFramebufferObject> fbo1_, fbo2_;
+    std::shared_ptr<QOpenGLFramebufferObject> new_frame, fbo1_, fbo2_;
     std::map<QString, std::shared_ptr<PostMaterial>> post_materials_;
     bool split_display_ = true;
     bool show_FBOs_ = false;
+    bool last_FBO_rendered_was_one = true;
 
     // different materials to be demonstrated
     std::map<QString, std::shared_ptr<TexturedPhongMaterial>> materials_;

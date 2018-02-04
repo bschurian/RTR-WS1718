@@ -11,6 +11,7 @@ public:
 
     // the texture to be post processed
     GLint post_texture_id;
+    GLint post_texture_id2;
 
     // the image size ("resolution") of the texture, needs to be set from outside
     QSize image_size;
